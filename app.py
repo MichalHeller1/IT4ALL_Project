@@ -1,11 +1,14 @@
 import uvicorn
 from fastapi import FastAPI
+import controller
+from controller.user_server import user_app
 
 app = FastAPI()
 
+app.include_router(user_app)
 
 @app.get("/")
-def root():
+async def root():
     return "the app is running..."
 
 
