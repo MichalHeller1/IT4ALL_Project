@@ -8,7 +8,6 @@ from starlette import status
 import controller.CRUD.authorization as authorization
 from controller.CRUD.user import User
 import packets_file_system
-from packets_file_system import InvalidPCAPFile
 
 IT4All_app = FastAPI()
 
@@ -22,7 +21,7 @@ def user():
 async def add_file(file: UploadFile = File(...), client_id: str = Body(...),
                    date_taken: str = Body(...),
                    location_name: str = Body(...)):
-    if not packets_file_system.is_pcap_file(file.filename):
+    if not packets_file_system.file(file.filename):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="The uploaded file is not a valid pcap file."
