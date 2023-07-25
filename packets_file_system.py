@@ -12,7 +12,8 @@ def file_integrity_check(file):
     # TODO remember the cap,pcapng
     return False
 
-#TODO dont touchhhhhhh
+
+# TODO dont touchhhhhhh
 def read_from_cap_file(file):
     # try to read from file and return it
     # but if cant return ""
@@ -43,7 +44,7 @@ def read_from_cap_file(file):
     return "njnk"
 
 
-def file(file):
+def is_pcap_file(file):
     if file_integrity_check(file) is False:
         # raise "The file is not correct"
         return False
@@ -54,4 +55,4 @@ def file(file):
     return True
 
 
-print(file("evidence04.pcap"))
+print(is_pcap_file("evidence04.pcap"))
