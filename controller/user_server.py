@@ -1,17 +1,15 @@
 import uvicorn
 from datetime import timedelta
-
-from fastapi import FastAPI, Response, Depends, HTTPException, encoders
+import app
+from fastapi import FastAPI, Response, Depends, HTTPException, encoders, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 import controller.CRUD.authorization as authorization
 
 user_app = FastAPI()
 
-access_token = ""
 
-
-@user_app.get("/")
+@user_app.get("/user")
 def user():
     return "user"
 
