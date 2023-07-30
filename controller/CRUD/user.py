@@ -1,6 +1,6 @@
 from typing import Union
 
-import app as app
+# import app as app
 import uvicorn
 from pydantic import BaseModel, constr, EmailStr
 
@@ -20,5 +20,3 @@ class UserInDB(User):
 # print(new_user)
 
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port=8000, log_level="info")

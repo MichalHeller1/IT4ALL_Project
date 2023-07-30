@@ -1,7 +1,7 @@
 import os
-# import pyshark
-from scapy.all import rdpcap, IP, Ether
+from scapy.all import rdpcap
 import socket
+from scapy.layers.inet import IP, Ether
 
 list_IP_src = []
 list_IP_dst = []
@@ -18,13 +18,11 @@ def proto_name_by_num(proto_num):
     return "Protocol not found"
 
 
-# פרוטוקול תקשורת ואת המערכת הפעלה של כל מכשיר
-
 # this func check the file if his extension is cap,pcap or pcapng
 def file_integrity_check(file):
     split_tup = os.path.splitext(file)
     file_extension = split_tup[1]
-    print(split_tup)
+    # print(split_tup)
     if file_extension == ".pcap":
         return True
     # TODO remember the cap,pcapng
@@ -54,9 +52,12 @@ def file(file):
     if file_integrity_check(file) is False:
         # raise "The file is not correct"
         return False
-    print(read_from_file_line_to_line(file))
-    print(list_protocol)
+    # print(read_from_file_line_to_line(file))
+    # print(list_protocol)
     return True
 
+# print(file("evidence04.pcap"))
 
-print(file("evidence04.pcap"))
+# מיכל!
+# מיכל!זה פונקציה מוכנה וטובה בשביל לקבל מהsourcוה dest את כתובת המאק שלהם הפונקציה צריכה לקבל את הפאקט כלומר שורה מהקובץ קאפ
+# אולי כדאי לפצל את זה לשתי פונקציות :אחת שמחזירה את הכתובת מקא של הsrc והשניה את הכתובת מאק של ה dst

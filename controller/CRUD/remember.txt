@@ -1,2 +1,8 @@
 לשים לב למודול שמתקשר עם ה IT4ALL.. שיש בו פונקציות שקשורות אחת לשניה ואם לא לפרק ליותר ממודול אחד.
 לזכור את הפונקציות שצריכות לרוץ כל הזמן כמו הרשאות טכנאי ואת הפונקציות שקשורות רק לרישו של הטכנאי.
+
+
+#לשאול את המורה לגבי הבעיה שהרבה קרתה לי מה זה אומר שיש לי בעיה ליימרט קובץ אחר
+הוא אומר לי את השגיאה הבאה:
+ImportError: cannot import name 'create_new_network' from partially initialized module 'issuies.network'
+(most likely due to a circular import)
