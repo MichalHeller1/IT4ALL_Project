@@ -4,6 +4,7 @@ from pymysql import IntegrityError
 
 from controller.CRUD.user import UserInDB
 from DB_Access import db_access
+from issuies.connection import Connection
 from issuies.device import Device
 from issuies.network import Network
 
@@ -32,11 +33,11 @@ async def add_new_network(network: Network):
         return network_id
 
 
-async def add_new_device(device: Device):
+async def add_device(device: Device):
     try:
-        query = """INSERT into Device (OS,MacAddress,Network)
+        query = """INSERT IGNORE into Device (MacAddress,Provider,Network) 
                                     values (%s, %s, %s)"""
-        val = (device.operation_system, device.mac_address, device.network_id)
+        val = (device.mac_address, device.operation_system, device.network_id)
         device_id = await db_access.add_new_data_to_db(query, val)
     except IntegrityError as e:
         # print(f"error: {e}")
@@ -45,3 +46,23 @@ async def add_new_device(device: Device):
         print("ok from add device.")
         return device_id
 
+
+async def add_connection(connection: Connection):
+    try:
+        query = """INSERT into Connection (Protocol,Source,Destination)
+                                      values (%s, %s, %s)"""
+        val = (connection.protocol, connection.src_mac_address, connection.dst_mac_address)
+        device_id = await db_access.add_new_data_to_db(query, val)
+    except IntegrityError as e:
+        # print(f"error: {e}")
+        raise e
+    else:
+        print("ok from add connection.")
+        return device_id
+
+
+async def add_devices(devices: dict):
+    for value in devices.values():
+        await add_device(value["device"])
+        for connection in value["connections"]:
+            await add_connection(connection)

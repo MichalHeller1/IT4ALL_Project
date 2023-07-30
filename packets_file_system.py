@@ -1,13 +1,17 @@
 import os
-from scapy.all import rdpcap
+from pathlib import Path
 import socket
+from scapy.all import *
 from scapy.layers.inet import IP, Ether
+from issuies.connection import Connection
+from issuies.device import Device
+from issuies.network import NetworkInDB
 
-list_IP_src = []
-list_IP_dst = []
-list_mac_src = []
-list_mac_dst = []
 list_protocol = []
+list_mac_dst = []
+list_mac_src = []
+list_IP_dst = []
+list_IP_src = []
 
 
 # find the protocol name from number that getting
@@ -56,8 +60,27 @@ def file(file):
     # print(list_protocol)
     return True
 
+
 # print(file("evidence04.pcap"))
 
 # מיכל!
 # מיכל!זה פונקציה מוכנה וטובה בשביל לקבל מהsourcוה dest את כתובת המאק שלהם הפונקציה צריכה לקבל את הפאקט כלומר שורה מהקובץ קאפ
 # אולי כדאי לפצל את זה לשתי פונקציות :אחת שמחזירה את הכתובת מקא של הsrc והשניה את הכתובת מאק של ה dst
+
+
+
+def get_device(packet, mac_address):
+    # o_s = packet["Ether"].os
+    o_s = "windows"
+    network_id = NetworkInDB.network_id
+    device = Device(operation_system=o_s, mac_address=mac_address, network_id=network_id)
+    return device
+
+
+def get_protocol(packet):
+    # protocol=packet["Ether"].protocol
+    protocol = "HTTP"
+    return protocol
+
+
+
