@@ -14,3 +14,4 @@ class NetworkInDB(Network):
 async def create_new_network():
     new_network = Network()
     return new_network
+

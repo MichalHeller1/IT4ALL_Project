@@ -6,6 +6,10 @@ from scapy.all import *
 from scapy.layers.inet import IP
 from scapy.layers.inet6 import IPv6
 
+from issuies.connection import Connection
+from issuies.device import Device
+from issuies.network import NetworkInDB
+
 
 # this func check the file if his extension is cap,pcap or pcapng
 def file_integrity_check(file):
@@ -50,10 +54,49 @@ async def get_mac_addresses_from_pcap(pcap_file):
             mac_addresses.add(dst_mac)
     return list(mac_addresses)
 
+
 # מיכל!
 # מיכל!זה פונקציה מוכנה וטובה בשביל לקבל מהsourcוה dest את כתובת המאק שלהם הפונקציה צריכה לקבל את הפאקט כלומר שורה מהקובץ קאפ
 # אולי כדאי לפצל את זה לשתי פונקציות :אחת שמחזירה את הכתובת מקא של הsrc והשניה את הכתובת מאק של ה dst
-async def get_mac_address_of_device(packet):
+def get_mac_address(packet):
     src_mac = packet["Ether"].src
     dst_mac = packet["Ether"].dst
-    return src_mac,dst_mac
+    return src_mac, dst_mac
+
+
+def get_device(packet, mac_address):
+    # o_s = packet["Ether"].os
+    o_s = "windows"
+    network_id = NetworkInDB.network_id
+    device = Device(operation_system=o_s, mac_address=mac_address, network_id=network_id)
+    return device
+
+
+def get_protocol(packet):
+    # protocol=packet["Ether"].protocol
+    protocol = "HTTP"
+    return protocol
+
+
+async def get_devices_to_add(pcap_file):
+    devices = {}
+    packets = rdpcap(fr'C:\Users\Owner\BOOTCAMP PYTHON\פרוייקט רשתות בשיתוף עם nvidia\קבצי cap לבדיקות\{pcap_file}')
+    print("i reade the file into packets")
+    for packet in packets:
+        if packet.haslayer("Ether"):
+            src_mac, dst_mac = get_mac_address(packet)
+            protocol = get_protocol(packet)
+            connection = Connection(src_mac_address=src_mac, dst_mac_address=dst_mac, protocol=protocol)
+            if not devices.get(src_mac):
+                src_device = get_device(packet, src_mac)
+                devices[src_mac] = {"device": src_device,
+                                    "connections": []}
+
+            if connection not in devices[src_mac]["connections"]:
+                devices[src_mac]["connections"].append(connection)
+            if not devices.get(dst_mac):
+                dst_device = get_device(packet, dst_mac)
+                devices[dst_mac] = {"device": dst_device,
+                                    "connections": []}
+
+    return dict(devices)

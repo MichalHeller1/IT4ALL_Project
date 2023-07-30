@@ -1,4 +1,5 @@
 import os
+from tkinter import filedialog
 
 import uvicorn
 from datetime import timedelta
@@ -32,6 +33,8 @@ async def add_file(file: UploadFile = File(...), client_id: str = Body(None),
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Not all requested data was provided")
+    # from chavi daitch to add file with the full path of the file...
+    # file_path = filedialog.askopenfilename(filetypes=[("PCAP files", "*.pcap")])
     Network.client_id = client_id
     Network.location = location_name
     Network.name = network_name
