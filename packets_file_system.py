@@ -1,12 +1,24 @@
 import os
 # import pyshark
 from scapy.all import rdpcap, IP, Ether
+import socket
 
 list_IP_src = []
 list_IP_dst = []
 list_mac_src = []
 list_mac_dst = []
+list_protocol = []
 
+
+# find the protocol name from number that getting
+def proto_name_by_num(proto_num):
+    for name, num in vars(socket).items():
+        if name.startswith("IPPROTO") and proto_num == num:
+            return name[8:]
+    return "Protocol not found"
+
+
+# פרוטוקול תקשורת ואת המערכת הפעלה של כל מכשיר
 
 # this func check the file if his extension is cap,pcap or pcapng
 def file_integrity_check(file):
@@ -28,6 +40,7 @@ def read_from_line_file(line):
     list_mac_src.append(src_mac)
     dst_mac = line[Ether].dst
     list_mac_dst.append(dst_mac)
+    list_protocol.append(proto_name_by_num(int(line[IP].proto)))
 
 
 def read_from_file_line_to_line(file):
@@ -42,7 +55,7 @@ def file(file):
         # raise "The file is not correct"
         return False
     print(read_from_file_line_to_line(file))
-    # print(list_mac_dst)
+    print(list_protocol)
     return True
 
 
