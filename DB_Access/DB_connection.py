@@ -8,6 +8,8 @@ connection = pymysql.connect(
     db='sql9635075',
 )
 
+if connection.open:
+    print("connect!!")
 
 
 
