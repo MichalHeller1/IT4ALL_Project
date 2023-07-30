@@ -18,9 +18,7 @@ def check_the_file(file):
         )
 
 
-# new_network: Network = Depends(network.create_new_network)
 async def get_network():
-    # new_network = await create_new_network()
     try:
         new_network = network.current_network
         print(new_network)

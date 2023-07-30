@@ -26,10 +26,8 @@ async def add_new_network(network: Network):
         val = (network.name, network.location, network.client_id)
         network_id = await db_access.add_new_data_to_db(query, val)
     except IntegrityError as e:
-        # print(f"error: {e}")
         raise e
     else:
-        print(f"ok from add network.the network id is:{network_id}")
         return network_id
 
 
@@ -37,13 +35,11 @@ async def add_device(device: Device):
     try:
         query = """INSERT IGNORE into Device (MacAddress,Provider,Network) 
                                     values (%s, %s, %s)"""
-        val = (device.mac_address, device.operation_system, device.network_id)
+        val = (device.mac_address, device.vendor, device.network_id)
         device_id = await db_access.add_new_data_to_db(query, val)
     except IntegrityError as e:
-        # print(f"error: {e}")
         raise e
     else:
-        print("ok from add device.")
         return device_id
 
 
@@ -54,10 +50,8 @@ async def add_connection(connection: Connection):
         val = (connection.protocol, connection.src_mac_address, connection.dst_mac_address)
         device_id = await db_access.add_new_data_to_db(query, val)
     except IntegrityError as e:
-        # print(f"error: {e}")
         raise e
     else:
-        print("ok from add connection.")
         return device_id
 
 
