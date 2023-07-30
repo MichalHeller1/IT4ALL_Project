@@ -1,6 +1,11 @@
-# import os
+import os
 # import pyshark
-from scapy.all import *
+from scapy.all import rdpcap, IP, Ether
+
+list_IP_src = []
+list_IP_dst = []
+list_mac_src = []
+list_mac_dst = []
 
 
 # this func check the file if his extension is cap,pcap or pcapng
@@ -13,20 +18,31 @@ def file_integrity_check(file):
     # TODO remember the cap,pcapng
     return False
 
-def read_from_cap_file_line_to_line(file):
+
+def read_from_line_file(line):
+    src_ip = str(line[IP].src)
+    list_IP_src.append(src_ip)
+    dst_ip = line[IP].dst
+    list_IP_dst.append(dst_ip)
+    src_mac = line[Ether].src
+    list_mac_src.append(src_mac)
+    dst_mac = line[Ether].dst
+    list_mac_dst.append(dst_mac)
+
+
+def read_from_file_line_to_line(file):
     packets = rdpcap(file)
-    lines_packets=[]
-    for i in packets:
-        lines_packets.append(i)
-    return lines_packets
+    for line in packets:
+        read_from_line_file(line)
+    return True
+
+
 def file(file):
     if file_integrity_check(file) is False:
         # raise "The file is not correct"
         return False
-    values_file_line_to_line = read_from_cap_file_line_to_line(file)
-    if len(values_file_line_to_line) <= 0:
-        return False
-    # send to function that get the value from cap at obj to the DB
+    print(read_from_file_line_to_line(file))
+    # print(list_mac_dst)
     return True
 
 
