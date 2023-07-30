@@ -6,6 +6,7 @@ from scapy.all import *
 from scapy.layers.inet import IP
 from scapy.layers.inet6 import IPv6
 
+from issuies import network
 from issuies.connection import Connection
 from issuies.device import Device
 from issuies.network import NetworkInDB
@@ -66,8 +67,8 @@ def get_mac_address(packet):
 
 def get_device(packet, mac_address):
     # o_s = packet["Ether"].os
-    o_s = "windows"
-    network_id = NetworkInDB.network_id
+    o_s = "linux"
+    network_id = network.current_network.network_id
     device = Device(operation_system=o_s, mac_address=mac_address, network_id=network_id)
     return device
 

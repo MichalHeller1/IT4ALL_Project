@@ -29,7 +29,7 @@ async def add_new_network(network: Network):
         # print(f"error: {e}")
         raise e
     else:
-        print("ok from add network.")
+        print(f"ok from add network.the network id is:{network_id}")
         return network_id
 
 
@@ -64,5 +64,6 @@ async def add_connection(connection: Connection):
 async def add_devices(devices: dict):
     for value in devices.values():
         await add_device(value["device"])
+    for value in devices.values():
         for connection in value["connections"]:
             await add_connection(connection)

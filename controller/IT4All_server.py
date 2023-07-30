@@ -14,7 +14,7 @@ from controller.CRUD.user import User
 import packets_file_system
 from issuies import network
 from DB_Implementatins.db_implementation import add_new_network
-from issuies.network import Network
+from issuies.network import NetworkInDB, Network
 
 IT4All_app = FastAPI()
 
@@ -35,13 +35,12 @@ async def add_file(file: UploadFile = File(...), client_id: str = Body(None),
             detail="Not all requested data was provided")
     # from chavi daitch to add file with the full path of the file...
     # file_path = filedialog.askopenfilename(filetypes=[("PCAP files", "*.pcap")])
-    Network.client_id = client_id
-    Network.location = location_name
-    Network.name = network_name
+    network.current_network = Network(client_id=client_id, location=location_name, name=network_name)
     file_actions.check_the_file(file.filename)
 
     await file_actions.add_the_received_file_to_db(file.filename)
     return "The file was received successfully."
+
 
 if __name__ == "__main__":
     uvicorn.run(IT4All_app, host="127.0.0.1", port=8000)

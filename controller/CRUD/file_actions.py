@@ -5,7 +5,7 @@ import DB_Implementatins.db_implementation as db_implementation
 
 import packets_file_system
 from issuies import network, device
-from issuies.network import NetworkInDB
+from issuies.network import NetworkInDB, Network
 
 
 def check_the_file(file):
@@ -22,7 +22,8 @@ def check_the_file(file):
 async def get_network():
     # new_network = await create_new_network()
     try:
-        new_network = await network.create_new_network()
+        new_network = network.current_network
+        print(new_network)
         new_network_id = await db_implementation.add_new_network(new_network)
     except Exception:
         raise HTTPException(
@@ -39,6 +40,7 @@ async def add_devices(file):
 
 
 async def add_the_received_file_to_db(file, network_id: int = Depends(get_network)):
-    NetworkInDB.network_id = await get_network()
+    network_id = await get_network()
+    network.current_network = NetworkInDB(network_id=network_id)
 
     await add_devices(file)
