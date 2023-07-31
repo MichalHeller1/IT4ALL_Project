@@ -24,13 +24,18 @@ async def add_file(file: UploadFile = File(...), client_id: str = Body(None),
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Not all requested data was provided")
-    file_path = filedialog.askopenfilename(filetypes=[("PCAP files", "*.pcap")])
+    # file_path = filedialog.askopenfilename(filetypes=[("PCAP files", "*.pcap")])
     # from chavi daitch to add file with the full path of the file...
     network.current_network = Network(client_id=client_id, location=location_name, name=network_name)
     file_actions.check_the_file(file.filename)
 
     await file_actions.add_the_received_file_to_db(file.filename)
     return "The file was received successfully."
+
+
+# @app.get("/get_connections_by_graph/{network_id}")
+# async def get_connections_by_graph(network_id):
+
 
 
 if __name__ == "__main__":
