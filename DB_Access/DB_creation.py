@@ -1,3 +1,4 @@
+from DB_Access import db_access
 from DB_connection import connection
 
 sqlCreateClientTable = """
@@ -19,5 +20,8 @@ sqlCreateTechnicianTable = """
     Email varchar(30)
     )
 """
+
 cursor = connection.cursor()
 cursor.execute(sqlCreateTechnicianTable)
+
+

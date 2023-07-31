@@ -7,10 +7,10 @@ from pydantic import BaseModel, constr, EmailStr
 
 class User(BaseModel):
     username: constr(min_length=3)
-    password: constr(min_length=5) = ""
+    password: constr(min_length=2) = ""
     phone: constr(min_length=10)
     email: Union[EmailStr, None] = None
-    disabled: Union[bool, None] = None
+    # disabled: Union[bool, None] = None
 
 
 class UserInDB(User):

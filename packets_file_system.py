@@ -1,4 +1,5 @@
 import os
+from io import BytesIO
 from pathlib import Path
 import socket
 
@@ -12,6 +13,7 @@ from issuies import network
 from issuies.connection import Connection
 from issuies.device import Device
 from issuies.network import NetworkInDB
+from app import logger
 
 
 # list_protocol = []
@@ -59,7 +61,7 @@ def file_integrity_check(file):
 #     return True
 
 
-def file(file):
+def check_file(file):
     if file_integrity_check(file) is False:
         return False
     return True
@@ -79,9 +81,8 @@ async def get_device(mac_address):
     vendor = "no vendor."
     try:
         vendor = get_vendor(mac_address)
-        print(vendor)
-    except Exception:
-        print("the device has no vendor")
+    except RuntimeWarning :
+        logger.info('the device has no vendor')
     network_id = network.current_network.network_id
     device = Device(vendor=vendor, mac_address=mac_address, network_id=network_id)
     return device
@@ -92,14 +93,44 @@ def get_protocol(packet):
     return protocol
 
 
+async def open_pcap_file(pcap_file):
+    file_content = BytesIO(await pcap_file.read())
+    packets = rdpcap(file_content)
+    return packets
+
+
 async def get_devices_to_add(pcap_file):
     devices = {}
-    packets = rdpcap(fr'C:\Users\Owner\BOOTCAMP PYTHON\פרוייקט רשתות בשיתוף עם nvidia\קבצי cap לבדיקות\{pcap_file}')
-    print("i reade the file into packets")
+    packets = await open_pcap_file(pcap_file)
     for packet in packets:
         if packet.haslayer("Ether"):
             src_mac, dst_mac = get_mac_address(packet)
-            protocol = get_protocol(packet)
+            if packet.haslayer("IP"):
+                protocol = get_protocol(packet)
+            connection = Connection(src_mac_address=src_mac, dst_mac_address=dst_mac, protocol=protocol)
+            if not devices.get(src_mac):
+                src_device = await get_device(src_mac)
+                devices[src_mac] = {"device": src_device,
+                                    "connections": []}
+
+            if connection not in devices[src_mac]["connections"]:
+                devices[src_mac]["connections"].append(connection)
+            if not devices.get(dst_mac):
+                dst_device = await get_device(dst_mac)
+                devices[dst_mac] = {"device": dst_device,
+                                    "connections": []}
+
+    return dict(devices)
+
+
+async def get_devices_to_add(pcap_file):
+    devices = {}
+    packets = await open_pcap_file(pcap_file)
+    for packet in packets:
+        if packet.haslayer("Ether"):
+            src_mac, dst_mac = get_mac_address(packet)
+            if packet.haslayer("IP"):
+                protocol = get_protocol(packet)
             connection = Connection(src_mac_address=src_mac, dst_mac_address=dst_mac, protocol=protocol)
             if not devices.get(src_mac):
                 src_device = await get_device(src_mac)
