@@ -4,7 +4,7 @@ import app
 from fastapi import FastAPI, Response, Depends, HTTPException, encoders, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
-import controller.CRUD.authorization as authorization
+import controller.CRUD.authentication as authorization
 
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -22,16 +22,12 @@ def user():
 
 @user_app.post("/login")
 async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends()):
-    if not form_data.username or not form_data.password:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail="Not all requested data was provided")
     current_user = await authorization.authenticate_user(form_data.username, form_data.password)
     if not current_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
+            headers={"WWW-Authenticate": "Bearer"}
         )
     access_token_expires = timedelta(minutes=authorization.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = authorization.create_access_token(
