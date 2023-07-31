@@ -20,24 +20,12 @@ def user():
     return "user"
 
 
-def get_current_username(credentials: HTTPBasicCredentials = Depends(security)):
-    if not (credentials.username == "johnsmith") or not (credentials.password == "swordfish"):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Basic"},
-        )
-
-    return credentials.username
-
-
-@app.get("/profile")
-async def main(username: str = Depends(get_current_username)):
-    return {"username": username}
-
-
 @user_app.post("/login")
 async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends()):
+    if not form_data.username or not form_data.password:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Not all requested data was provided")
     current_user = await authorization.authenticate_user(form_data.username, form_data.password)
     if not current_user:
         raise HTTPException(

@@ -19,7 +19,7 @@ async def authenticate_user(user_name: str, password: str):
     user: UserInDB = await db_implementation.get_user_from_db(user_name)
     if not user:
         return None
-    if not verify_password(password, user.hashed_password):
+    if not verify_password(password, user.password):
         return None
     return user
 
