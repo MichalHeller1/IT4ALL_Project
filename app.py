@@ -1,8 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
-from controller.user_server import user_app
 
 app = FastAPI()
+
 
 @app.get("/")
 async def root():

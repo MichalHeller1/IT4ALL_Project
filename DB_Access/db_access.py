@@ -1,11 +1,6 @@
 import pymysql
 
 from DB_Access.DB_connection import connection
-from controller.CRUD.user_data_base import users_db
-
-
-def get_user(user_name):
-    return users_db.get(user_name)
 
 
 async def add_new_data_to_db(query, val):
@@ -13,3 +8,10 @@ async def add_new_data_to_db(query, val):
         cursor.execute(query, val)
         connection.commit()
     return cursor.lastrowid
+
+
+async def get_data_from_db(query, val):
+    with connection.cursor() as cursor:
+        cursor.execute(query, val)
+        user = await cursor.fetchone()
+    return user

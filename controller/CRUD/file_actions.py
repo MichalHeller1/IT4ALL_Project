@@ -39,6 +39,6 @@ async def add_devices(file):
 
 async def add_the_received_file_to_db(file, network_id: int = Depends(get_network)):
     network_id = await get_network()
-    network.current_network = NetworkInDB(network_id=network_id)
+    network.current_network = NetworkInDB(**network.current_network.dict(), network_id=network_id)
 
     await add_devices(file)

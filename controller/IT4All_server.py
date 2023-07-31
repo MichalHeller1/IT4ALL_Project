@@ -1,30 +1,21 @@
-import os
 from tkinter import filedialog
 
 import uvicorn
-from datetime import timedelta
-from DB_Implementatins import db_implementation
-from fastapi import FastAPI, Response, Depends, HTTPException, encoders, UploadFile, File, Body
-from fastapi.security import OAuth2PasswordRequestForm
-from pydantic import BaseModel, json
+from fastapi import FastAPI, HTTPException, UploadFile, File, Body
 from starlette import status
-import controller.CRUD.authorization as authorization
 import controller.CRUD.file_actions as file_actions
-from controller.CRUD.user import User
-import packets_file_system
 from issuies import network
-from DB_Implementatins.db_implementation import add_new_network
-from issuies.network import NetworkInDB, Network
+from issuies.network import Network
 
-IT4All_app = FastAPI()
+app = FastAPI()
 
 
-@IT4All_app.get("/")
+@app.get("/")
 def user():
     return "IT4All server is up!"
 
 
-@IT4All_app.post("/add_file/")
+@app.post("/add_file/")
 async def add_file(file: UploadFile = File(...), client_id: str = Body(None),
                    date_taken: str = Body(None),
                    location_name: str = Body(None),
@@ -33,8 +24,8 @@ async def add_file(file: UploadFile = File(...), client_id: str = Body(None),
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Not all requested data was provided")
+    file_path = filedialog.askopenfilename(filetypes=[("PCAP files", "*.pcap")])
     # from chavi daitch to add file with the full path of the file...
-    # file_path = filedialog.askopenfilename(filetypes=[("PCAP files", "*.pcap")])
     network.current_network = Network(client_id=client_id, location=location_name, name=network_name)
     file_actions.check_the_file(file.filename)
 
@@ -43,4 +34,4 @@ async def add_file(file: UploadFile = File(...), client_id: str = Body(None),
 
 
 if __name__ == "__main__":
-    uvicorn.run(IT4All_app, host="127.0.0.1", port=8000)
+    uvicorn.run(app, host="127.0.0.1", port=8000)

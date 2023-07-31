@@ -3,7 +3,7 @@ from typing import Union
 from jose import jwt
 from passlib.context import CryptContext
 from DB_Implementatins import db_implementation
-from controller.CRUD.user import UserInDB
+from issuies.user import UserInDB
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = "6hFiwU20LvHCMcZZlDiExQE_n9sSyyBomFiltXrxF9c"

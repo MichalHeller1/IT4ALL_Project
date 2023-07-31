@@ -75,10 +75,11 @@ def get_vendor(mac_address):
     return MacLookup().lookup(mac_address)
 
 
-def get_device(mac_address):
+async def get_device(mac_address):
     vendor = "no vendor."
     try:
         vendor = get_vendor(mac_address)
+        print(vendor)
     except Exception:
         print("the device has no vendor")
     network_id = network.current_network.network_id
@@ -101,14 +102,14 @@ async def get_devices_to_add(pcap_file):
             protocol = get_protocol(packet)
             connection = Connection(src_mac_address=src_mac, dst_mac_address=dst_mac, protocol=protocol)
             if not devices.get(src_mac):
-                src_device = get_device(src_mac)
+                src_device = await get_device(src_mac)
                 devices[src_mac] = {"device": src_device,
                                     "connections": []}
 
             if connection not in devices[src_mac]["connections"]:
                 devices[src_mac]["connections"].append(connection)
             if not devices.get(dst_mac):
-                dst_device = get_device(dst_mac)
+                dst_device = await get_device(dst_mac)
                 devices[dst_mac] = {"device": dst_device,
                                     "connections": []}
 

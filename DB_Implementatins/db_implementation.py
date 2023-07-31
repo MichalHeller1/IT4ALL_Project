@@ -1,8 +1,6 @@
-import pymysql
-from fastapi import Depends
 from pymysql import IntegrityError
 
-from controller.CRUD.user import UserInDB
+from issuies.user import UserInDB
 from DB_Access import db_access
 from issuies.connection import Connection
 from issuies.device import Device
@@ -10,8 +8,9 @@ from issuies.network import Network
 
 
 async def get_user_from_db(user_name):
-    # TODO:get the user from the sql DB
-    user = db_access.get_user(user_name)
+    query = """SELECT * FROM Technician WHERE Name = %s"""
+    val = user_name
+    user = await db_access.get_data_from_db(query, val)
     if user:
         return UserInDB(**user)
 
