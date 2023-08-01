@@ -1,6 +1,5 @@
-import pymysql
-
 from DB_Access.DB_connection import connection
+import codecs
 
 
 async def add_new_data_to_db(query, val):
@@ -22,5 +21,18 @@ async def get_network_connections_from_db(query, val):
         cursor.execute(query, val)
         connection.commit()
         connections_in_network = cursor.fetchall()
+
+    decoded_connections = []
+    for con in connections_in_network:
+        decoded_connection = []
+        for item in con:
+            if isinstance(item, bytes):
+                decoded_connection.append(codecs.decode(item, 'latin-1'))
+            else:
+                decoded_connection.append(item)
+        decoded_connections.append(decoded_connection)
+
     print("got all connections")
-    return connections_in_network
+    return decoded_connections
+
+

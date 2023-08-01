@@ -70,7 +70,6 @@ sqlCreatePermissionsTable = """
 
 """
 
-
 insertTechnicians = """INSERT INTO Technician (
     Name,
     Password,
@@ -93,7 +92,6 @@ VALUES
         '055-6451874',
         'Michal@gmail.com'
     );"""
-
 
 insertClients = """INSERT INTO Client (
     Name,
@@ -118,16 +116,39 @@ VALUES
         'Yoram@gmail.com'
     );"""
 
-
 insertPermissions = """INSERT INTO Permissions (
-   Technician,
-    Client,
+    Technician,
+    Client
 )
 VALUES
-    (1,1);
-    """
-
+    (   4,
+        1
+    ),
+    (   4,
+        2
+    ),
+    (   4,
+        3
+    ),
+     (  5,
+        1
+    ),
+    (   5,
+        2
+    ),
+    (   5,
+        3
+    ),
+     (  6,
+        1
+    ),
+    (   6,
+        2
+    ),
+    (   6,
+        3
+    );"""
 
 with connection.cursor() as cursor:
-    cursor.execute(insertTechnicians)
+    cursor.execute(insertPermissions)
     connection.commit()

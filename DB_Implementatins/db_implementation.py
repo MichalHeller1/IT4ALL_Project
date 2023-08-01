@@ -2,11 +2,12 @@ import pymysql
 from fastapi import Depends
 from pymysql import IntegrityError
 
-from issuies.user import UserInDB, User
+from DB_Access.db_access import get_network_connections_from_db
+from issues.user import UserInDB, User
 from DB_Access import db_access
-from issuies.connection import Connection
-from issuies.device import Device
-from issuies.network import Network
+from issues.connection import Connection, DevicesConnection
+from issues.device import Device
+from issues.network import Network, current_network
 
 
 async def get_user_from_db(user_name):
@@ -80,29 +81,65 @@ async def add_technician(user: User):
     await db_access.add_new_data_to_db(query, val)
 
 
-async def check_permission(user: User):
-    # query = """
-    #         ...
-    #     """
-    # val = (user.username, user.password, user.phone, user.email)
-    # await db_access.add_new_data_to_db(query, val)
-    return True
+async def check_permission(user: User, client_id):
+    query = """
+                SELECT Technician.id
+                FROM Technician
+                JOIN Permissions ON Technician.id = Permissions.Technician
+                JOIN Client ON Permissions.Client = Client.id
+                WHERE Technician.Name = %s AND Client.id = %s
+            """
+    val = (user.username, client_id)
+    permission = bool(db_access.get_data_from_db(query, val))
+    return permission
 
 
-def get_network_connections(network_id):
-    select_communication_query = """
-    SELECT C.Protocol,
-      source_device.MacAddress as MacSource,
-      source_device.Provider as SourceProvider,
-      source_device.Network,
-      destination_device.MacAddress as MacDestination,
-      destination_device.Provider as DestinationProvider
-FROM Connection C
-Join Device source_device
-ON C.Source=source_device.MacAddress
-Join Device destination_device
-ON C.Destination=destination_device.MacAddress
-WHERE source_device.Network = %s
-;"""
-    val = network_id
-    return db_access.get_network_connections_from_db(select_communication_query, val)
+async def get_network_connections(network_id):
+    print(network_id)
+    query = """
+          SELECT 
+    conn.id AS connection_id,
+    conn.Protocol,
+    dev1.MacAddress AS source_mac_address,
+    dev1.Vendor AS source_provider,
+    net1.Name AS source_network_name,
+    dev2.MacAddress AS destination_mac_address,
+    dev2.Vendor AS destination_provider,
+    net2.Name AS destination_network_name
+FROM 
+    Connection conn
+JOIN 
+    Device dev1 ON conn.Source = dev1.MacAddress
+JOIN 
+    Device dev2 ON conn.Destination = dev2.MacAddress
+JOIN
+    Network net1 ON dev1.Network = net1.id
+JOIN
+    Network net2 ON dev2.Network = net2.id
+WHERE 
+    net1.id = %s
+    AND net2.id = %s
+
+          """
+    val = (network_id, network_id)
+    decoded_connections = await get_network_connections_from_db(query, val)
+    full_connections = []
+
+    for connection in decoded_connections:
+        mac_address1 = connection[2]
+        vendor1 = connection[3]
+        network_id1 = 1
+
+        mac_address2 = connection[5]
+        vendor2 = connection[6]
+        network_id2 = 1
+
+        device1 = Device(vendor=vendor1, mac_address=mac_address1, network_id=network_id1)
+        device2 = Device(vendor=vendor2, mac_address=mac_address2, network_id=network_id2)
+
+        full_connection = DevicesConnection(src_device=device1, dst_device=device2, protocol=connection[1])
+        full_connections.append(full_connection)
+
+    return full_connections
+
+    # return db_access.get_network_connections_from_db(query, val)

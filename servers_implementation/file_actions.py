@@ -4,8 +4,8 @@ from starlette import status
 import DB_Implementatins.db_implementation as db_implementation
 
 from global_modules import packets_file_system
-from issuies import network
-from issuies.network import NetworkInDB
+from issues import network
+from issues.network import NetworkInDB
 
 
 def check_the_file(file):
@@ -39,3 +39,4 @@ async def add_the_received_file_to_db(file):
     network_id = await add_network()
     network.current_network = NetworkInDB(**network.current_network.dict(), network_id=network_id)
     await add_devices_from_pcap_file(file)
+    return network_id

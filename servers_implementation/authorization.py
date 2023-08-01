@@ -9,6 +9,8 @@ from jose import jwt, ExpiredSignatureError
 from pydantic import BaseModel
 
 from DB_Implementatins import db_implementation
+from issues import client
+from issues.client import ClientId
 from servers_implementation import authentication
 
 SECRET_KEY = "6hFiwU20LvHCMcZZlDiExQE_n9sSyyBomFiltXrxF9c"
@@ -79,5 +81,16 @@ async def get_current_user(token: str = Depends(oauth2_cookie_scheme)):
 
 
 async def check_permission_of_technician(user=Depends(get_current_user)):
-    if await db_implementation.check_permission(user):
+    client_id = client.current_client_id
+    if not client_id.client_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Let us know which client you want to work with. You must enter the client number first."
+        )
+    if await db_implementation.check_permission(user, client_id.client_id):
         return user
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Sorry! You cannot access this client."
+        )

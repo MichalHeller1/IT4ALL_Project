@@ -5,7 +5,7 @@ from passlib.context import CryptContext
 from passlib.exc import UnknownHashError
 
 from DB_Implementatins import db_implementation
-from issuies.user import UserInDB, User
+from issues.user import UserInDB, User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = "6hFiwU20LvHCMcZZlDiExQE_n9sSyyBomFiltXrxF9c"
