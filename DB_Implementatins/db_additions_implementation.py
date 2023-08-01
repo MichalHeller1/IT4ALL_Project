@@ -78,3 +78,25 @@ async def check_permission(user: User, client_id):
     val = (user.username, client_id)
     permission = bool(db_access.get_data_from_db(query, val))
     return permission
+
+
+async def get_client_devices(client_id):
+    query = """SELECT Device.MacAddress, Device.Vendor, Device.Network FROM Device
+        JOIN Network
+        On Device.Network=Network.id
+        WHERE Network.Client=%s
+        """
+    val = client_id
+    devices = await db_access.get_client_devices_from_db(query, val)
+    return [Device(mac_address=device[0], vendor=device[1], network_id=device[2]) for device in devices]
+
+
+async def get_device_protocols(mac_address):
+    query = """SELECT Protocol
+    FROM Connection
+    WHERE Source=%s OR Destination=%s
+    GROUP BY Protocol
+    """
+    val = mac_address, mac_address
+    return await db_access.invoke_query(query, val)
+
