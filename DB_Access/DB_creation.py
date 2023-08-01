@@ -1,4 +1,3 @@
-from DB_Access import db_access
 from DB_connection import connection
 
 sqlCreateClientTable = """
@@ -38,7 +37,7 @@ sqlCreateNetworkTable = """
 sqlCreateDeviceTable = """
     CREATE TABLE Device(
     MacAddress varchar(30) NOT NULL PRIMARY KEY,
-    Provider varchar(32),
+    Vendor varchar(32),
     Network int,
     FOREIGN KEY (Network) REFERENCES Network(id)
     )
@@ -77,20 +76,20 @@ insertTechnicians = """INSERT INTO Technician (
     Email
 )
 VALUES
-    (   'Tovi',
-        '$2a$12$TsB6KCgG8mytfjkZlXaVDeBJw1E56e7532r1mV.vpQRSqJdzZyFdG',
-        '058-3232818',
-        'Tovi@gmail.com'
+    (   'Yossi',
+        '111',
+        '055-5555555',
+        'Yossi@gmail.com'
     ),
-    (   'Avia',
-        '$2a$12$Q.jVmoZMMdNC0.kuq8phdum9I630ZbxM73xNNCn0pp/mba/q4v6wa',
-        '052-4659745',
-        'Avia@gmail.com'
+    (   'Avi',
+        '222',
+        '055-5555556',
+        'Avi@gmail.com'
     ),
-    (   'Michal',
-        '$2a$12$8VgZFDb9EM104KveiM5kI.Hs2PbdzEzySXkAMmYjW851ZnE1kGZg6',
-        '055-6451874',
-        'Michal@gmail.com'
+    (   'Dan',
+        '333',
+        '055-5555557',
+        'Dan@gmail.com'
     );"""
 
 insertClients = """INSERT INTO Client (
