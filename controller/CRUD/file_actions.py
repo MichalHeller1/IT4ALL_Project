@@ -5,24 +5,22 @@ import DB_Implementatins.db_implementation as db_implementation
 
 import packets_file_system
 from issuies import network, device
-from issuies.network import NetworkInDB
+from issuies.network import NetworkInDB, Network
 
 
 def check_the_file(file):
     # ask the teacher where exactly the try and the catch need to be.
     # here or in the db_implementation or db_access or both of them?
-    if not packets_file_system.file(file):
+    if not packets_file_system.check_file(file):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="The uploaded file is not a valid pcap file."
         )
 
 
-# new_network: Network = Depends(network.create_new_network)
-async def get_network():
-    # new_network = await create_new_network()
+async def add_network():
     try:
-        new_network = await network.create_new_network()
+        new_network = network.current_network
         new_network_id = await db_implementation.add_new_network(new_network)
     except Exception:
         raise HTTPException(
@@ -32,13 +30,12 @@ async def get_network():
     return new_network_id
 
 
-async def add_devices(file):
-    print("i am in file_action.add_device")
-    devices_to_add = await packets_file_system.get_devices_to_add(file)
+async def add_devices_from_pcap_file(pcap_file):
+    devices_to_add = await packets_file_system.get_devices_to_add(pcap_file)
     await db_implementation.add_devices(devices_to_add)
 
 
-async def add_the_received_file_to_db(file, network_id: int = Depends(get_network)):
-    NetworkInDB.network_id = await get_network()
-
-    await add_devices(file)
+async def add_the_received_file_to_db(file):
+    network_id = await add_network()
+    network.current_network = NetworkInDB(**network.current_network.dict(), network_id=network_id)
+    await add_devices_from_pcap_file(file)

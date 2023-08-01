@@ -1,14 +1,34 @@
-# import os
-# import pyshark
+import os
+from io import BytesIO
 from pathlib import Path
+import socket
 
+from mac_vendor_lookup import MacLookup
 from scapy.all import *
+from scapy.layers.inet import IP, Ether
 from scapy.layers.inet import IP
 from scapy.layers.inet6 import IPv6
 
+from issuies import network
 from issuies.connection import Connection
 from issuies.device import Device
 from issuies.network import NetworkInDB
+from app import logger
+
+
+# list_protocol = []
+# list_mac_dst = []
+# list_mac_src = []
+# list_IP_dst = []
+# list_IP_src = []
+
+
+# find the protocol name from number that getting
+def proto_name_by_num(proto_num):
+    for name, num in vars(socket).items():
+        if name.startswith("IPPROTO") and proto_num == num:
+            return name[8:]
+    return "Protocol not found"
 
 
 # this func check the file if his extension is cap,pcap or pcapng
@@ -22,80 +42,105 @@ def file_integrity_check(file):
     return False
 
 
-#
-# def read_from_cap_file_line_to_line(file):
+# def read_from_line_file(line):
+#     src_ip = str(line[IP].src)
+#     list_IP_src.append(src_ip)
+#     dst_ip = line[IP].dst
+#     list_IP_dst.append(dst_ip)
+#     src_mac = line[Ether].src
+#     list_mac_src.append(src_mac)
+#     dst_mac = line[Ether].dst
+#     list_mac_dst.append(dst_mac)
+#     list_protocol.append(proto_name_by_num(int(line[IP].proto)))
+
+
+# def read_from_file_line_to_line(file):
 #     packets = rdpcap(file)
-#     lines_packets=[]
-#     for i in packets:
-#         lines_packets.append(i)
-#     return lines_packets
-def file(file):
+#     for line in packets:
+#         read_from_line_file(line)
+#     return True
+
+
+def check_file(file):
     if file_integrity_check(file) is False:
-        # raise "The file is not correct"
         return False
-    # values_file_line_to_line = read_from_cap_file_line_to_line(file)
-    # if len(values_file_line_to_line) <= 0:
-    #     return False
-    # send to function that get the value from cap at obj to the DB
     return True
 
 
-async def get_mac_addresses_from_pcap(pcap_file):
-    # TODO:change this function to get_device_from_pcap_file and this func will use this func and it will create a device from every mac address and to return it in list of devices
-    mac_addresses = set()  # Use a set to avoid duplicates
-    # TODO: let the user to insert file from every location on his computer
-    # now you can insert a file just from the location that you can change here.
-    packets = rdpcap(fr'C:\Users\Owner\BOOTCAMP PYTHON\פרוייקט רשתות בשיתוף עם nvidia\קבצי cap לבדיקות\{pcap_file}')
-    for packet in packets:
-        if packet.haslayer("Ether"):
-            src_mac = packet["Ether"].src
-            dst_mac = packet["Ether"].dst
-            mac_addresses.add(src_mac)
-            mac_addresses.add(dst_mac)
-    return list(mac_addresses)
-
-
-# מיכל!
-# מיכל!זה פונקציה מוכנה וטובה בשביל לקבל מהsourcוה dest את כתובת המאק שלהם הפונקציה צריכה לקבל את הפאקט כלומר שורה מהקובץ קאפ
-# אולי כדאי לפצל את זה לשתי פונקציות :אחת שמחזירה את הכתובת מקא של הsrc והשניה את הכתובת מאק של ה dst
 def get_mac_address(packet):
     src_mac = packet["Ether"].src
     dst_mac = packet["Ether"].dst
     return src_mac, dst_mac
 
 
-def get_device(packet, mac_address):
-    # o_s = packet["Ether"].os
-    o_s = "windows"
-    network_id = NetworkInDB.network_id
-    device = Device(operation_system=o_s, mac_address=mac_address, network_id=network_id)
+def get_vendor(mac_address):
+    return MacLookup().lookup(mac_address)
+
+
+async def get_device(mac_address):
+    vendor = "no vendor."
+    try:
+        vendor = get_vendor(mac_address)
+    except RuntimeWarning :
+        logger.info('the device has no vendor')
+    network_id = network.current_network.network_id
+    device = Device(vendor=vendor, mac_address=mac_address, network_id=network_id)
     return device
 
 
 def get_protocol(packet):
-    # protocol=packet["Ether"].protocol
-    protocol = "HTTP"
+    protocol = proto_name_by_num(int(packet[IP].proto))
     return protocol
+
+
+async def open_pcap_file(pcap_file):
+    file_content = BytesIO(await pcap_file.read())
+    packets = rdpcap(file_content)
+    return packets
 
 
 async def get_devices_to_add(pcap_file):
     devices = {}
-    packets = rdpcap(fr'C:\Users\Owner\BOOTCAMP PYTHON\פרוייקט רשתות בשיתוף עם nvidia\קבצי cap לבדיקות\{pcap_file}')
-    print("i reade the file into packets")
+    packets = await open_pcap_file(pcap_file)
     for packet in packets:
         if packet.haslayer("Ether"):
             src_mac, dst_mac = get_mac_address(packet)
-            protocol = get_protocol(packet)
+            if packet.haslayer("IP"):
+                protocol = get_protocol(packet)
             connection = Connection(src_mac_address=src_mac, dst_mac_address=dst_mac, protocol=protocol)
             if not devices.get(src_mac):
-                src_device = get_device(packet, src_mac)
+                src_device = await get_device(src_mac)
                 devices[src_mac] = {"device": src_device,
                                     "connections": []}
 
             if connection not in devices[src_mac]["connections"]:
                 devices[src_mac]["connections"].append(connection)
             if not devices.get(dst_mac):
-                dst_device = get_device(packet, dst_mac)
+                dst_device = await get_device(dst_mac)
+                devices[dst_mac] = {"device": dst_device,
+                                    "connections": []}
+
+    return dict(devices)
+
+
+async def get_devices_to_add(pcap_file):
+    devices = {}
+    packets = await open_pcap_file(pcap_file)
+    for packet in packets:
+        if packet.haslayer("Ether"):
+            src_mac, dst_mac = get_mac_address(packet)
+            if packet.haslayer("IP"):
+                protocol = get_protocol(packet)
+            connection = Connection(src_mac_address=src_mac, dst_mac_address=dst_mac, protocol=protocol)
+            if not devices.get(src_mac):
+                src_device = await get_device(src_mac)
+                devices[src_mac] = {"device": src_device,
+                                    "connections": []}
+
+            if connection not in devices[src_mac]["connections"]:
+                devices[src_mac]["connections"].append(connection)
+            if not devices.get(dst_mac):
+                dst_device = await get_device(dst_mac)
                 devices[dst_mac] = {"device": dst_device,
                                     "connections": []}
 
