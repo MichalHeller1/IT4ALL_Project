@@ -73,4 +73,4 @@ connection5 = DevicesConnection(src_device=device1, dst_device=device5, protocol
 connection6 = DevicesConnection(src_device=device1, dst_device=device4, protocol="HTTP")
 connection7 = DevicesConnection(src_device=device5, dst_device=device1, protocol="HTTP")
 connections = [connection, connection2, connection3, connection4, connection5, connection6, connection7]
-visualize_network_graph(connections)
+# visualize_network_graph(connections)

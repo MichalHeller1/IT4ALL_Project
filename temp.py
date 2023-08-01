@@ -58,5 +58,12 @@ async def main():
     print(result)
 
 
+def get_devices_by_client(client_id):
+    query = """SELECT * FROM Device
+    Join Network
+    On Device.Network=Network.id
+    WHERE Network.Client=%s
+    """
+
 asyncio.run(main())
 

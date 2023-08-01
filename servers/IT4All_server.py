@@ -31,10 +31,23 @@ IT4All_router = APIRouter()
 
 
 
-@IT4All_router.get("/get_connections_in_network/network_id")
+@IT4All_router.get("/get_connections_in_network/{network_id}")
 async def get_connections_in_network(network_id):
     connections = await db_implementation.get_network_connections(network_id)
     return connections
+
+
+@IT4All_router.get("/get_client_devices/{client_id}")
+async def get_client_devices(client_id):
+    devices = await db_implementation.get_client_devices(client_id)
+    return devices
+
+
+@IT4All_router.get("/device_protocols/{device_id}")
+async def get_client_devices(device_id):
+    protocols = await db_implementation.get_device_protocols(device_id)
+    return protocols
+
 
 @IT4All_router.post("/add_file/")
 async def add_file(current_user: User = Depends(authorization.check_permission_of_technician),
