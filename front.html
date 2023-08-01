@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IT4All FastAPI Client</title>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #007BFF;
+        }
+
+        h2 {
+            color: #343A40;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        img {
+            max-width: 300px;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+<h1>IT4All FastAPI Client</h1>
+
+<h2>Login</h2>
+<form id="login-form">
+    <label for="username">Username:</label>
+    <input type="text" id="username" name="username" required><br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required><br>
+    <button type="submit">Login</button>
+</form>
+
+<h2>Send Client ID</h2>
+<form id="send-client-id-form">
+    <label for="client-id">Client ID:</label>
+    <input type="text" id="client-id" name="client_id" required>
+    <button type="submit">Send Client ID</button>
+</form>
+
+<<h2>Add File</h2>
+<form id="add-file-form" enctype="multipart/form-data">
+    <label for="file">File:</label>
+    <input type="file" id="file" name="file" required><br>
+    <label for="date-taken">Date Taken:</label>
+    <input type="text" id="date-taken" name="date_taken" required><br>
+    <label for="location-name">Location Name:</label>
+    <input type="text" id="location-name" name="location_name" required><br>
+    <label for="network-name">Network Name:</label>
+    <input type="text" id="network-name" name="network_name" required><br>
+    <button type="submit">Add File</button>
+</form>
+
+<img id="image-preview" style="display: none;">
+
+<h2>Get Connections-Graph of Network-id</h2>
+<form id="get-connections-form">
+    <label for="network-id">Network ID:</label>
+    <input type="text" id="network-id" name="network_id" required>
+    <button type="submit">Get Connections</button>
+</form>
+
+<h2>Get Devices list of Network-id</h2>
+<form id="get-devices-form">
+    <label for="devices-network-id">Network ID:</label>
+    <input type="text" id="devices-network-id" name="network_id" required>
+    <button type="submit">Get Devices</button>
+</form>
+
+<script>
+
+    // Function to handle the login form submission
+    document.getElementById('login-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        // Get the form input values (username and password)
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        // Create a new FormData object to construct the request body
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
+
+        // Send the POST request with the form data using Fetch API
+        fetch('http://127.0.0.1:8000/login', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response data, for example, save the access token to local storage
+            localStorage.setItem('access_token', data.access_token);
+            alert('Login successful! Access Token saved.');
+        })
+        .catch(error => alert('Error:', error));
+    });
+
+        document.getElementById('send-client-id-form').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent the default form submission behavior
+
+            // Get the value of the client_id input field
+            const clientId = document.getElementById('client-id').value;
+
+            // Define the request data as an object
+            const requestData = {
+                client_id: clientId
+            };
+
+            // Send the request to the FastAPI server using the Fetch API
+            fetch('http://127.0.0.1:8000/send_client_id', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `client_id=${clientId}`
+            })
+            .then(response => response.text())
+            .then(data => alert(data))
+            .catch(error => alert('Error:', error));
+        });
+
+ document.getElementById('add-file-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const accessToken = localStorage.getItem('access_token');
+        // Get the form input values
+        const fileInput = document.getElementById('file');
+        const dateTaken = document.getElementById('date-taken').value;
+        const locationName = document.getElementById('location-name').value;
+        const networkName = document.getElementById('network-name').value;
+
+        // Create a new FormData object to construct the request body
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+        formData.append('date_taken', dateTaken);
+        formData.append('location_name', locationName);
+        formData.append('network_name', networkName);
+
+        // Send the POST request with the form data using Fetch API
+        fetch('http://127.0.0.1:8000/add_file/', {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${accessToken}` // Include the access token in the header
+            },
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => alert(data))
+        .catch(error => alert('Error:', error));
+    });
+
+
+       document.getElementById('get-connections-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const networkId = document.getElementById('network-id').value;
+        fetch(`http://127.0.0.1:8000/get_connections_in_network/${networkId}/`, {
+        method: 'GET'
+    })
+    .then(response => {
+        // Check if the response status is OK
+        if (!response.ok) {
+            return response.text().then(errorMessage => {
+                // Display an alert with the error message from the response
+                alert(errorMessage);
+                throw new Error('Network response was not OK');
+            });
+        }
+        // Parse the response as a Blob (binary data)
+        return response.blob();
+    })
+    .then(blob => {
+        // Create a temporary URL for the image data
+        const imageUrl = URL.createObjectURL(blob);
+
+        // Display the image in the HTML page
+        const imagePreview = document.getElementById('image-preview');
+        imagePreview.src = imageUrl;
+        imagePreview.style.display = 'block';
+    })
+    .catch(error => alert('Error:', error));
+});
+
+        document.getElementById('get-devices-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const networkId = document.getElementById('devices-network-id').value;
+            fetch(`http://127.0.0.1:8000/get_devices_of_network_id/${networkId}`, {
+                method: 'GET'
+            })
+            .then(response => response.text())
+            .then(data => alert(data))
+            .catch(error => alert('Error:', error));
+        });
+
+
+</script>
+</body>
+</html>
