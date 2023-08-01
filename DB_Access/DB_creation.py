@@ -1,4 +1,3 @@
-from DB_Access import db_access
 from DB_connection import connection
 
 sqlCreateClientTable = """
@@ -21,9 +20,6 @@ sqlCreateTechnicianTable = """
     )
 """
 
-cursor = connection.cursor()
-cursor.execute(sqlCreateTechnicianTable)
-
 sqlCreateNetworkTable = """
     CREATE TABLE Network(
     id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -38,7 +34,7 @@ sqlCreateNetworkTable = """
 sqlCreateDeviceTable = """
     CREATE TABLE Device(
     MacAddress varchar(30) NOT NULL PRIMARY KEY,
-    Provider varchar(32),
+    Vendor varchar(32),
     Network int,
     FOREIGN KEY (Network) REFERENCES Network(id)
     )
@@ -129,5 +125,5 @@ VALUES
 
 
 with connection.cursor() as cursor:
-    cursor.execute(sqlCreateConnectionTable)
+    cursor.execute(insertPermissions)
     connection.commit()

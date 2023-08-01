@@ -13,7 +13,7 @@ from issuies import network
 from issuies.connection import Connection
 from issuies.device import Device
 from issuies.network import NetworkInDB
-from app import logger
+# from app import logger
 
 
 # list_protocol = []

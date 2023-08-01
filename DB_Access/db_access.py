@@ -18,6 +18,7 @@ async def get_data_from_db(query, val):
 
 
 async def get_network_connections_from_db(query, val):
+    print("i am in the get_network_connections_from_db func")
     with connection.cursor() as cursor:
         cursor.execute(query, val)
         connection.commit()
