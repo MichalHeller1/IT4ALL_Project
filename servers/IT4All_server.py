@@ -1,6 +1,7 @@
-from fastapi import  HTTPException, UploadFile, File, Body, Depends, APIRouter
+from fastapi import HTTPException, UploadFile, File, Body, Depends, APIRouter
 import os
 import sys
+
 # to make sys search from network_analyst not from my_api
 curr_path = os.path.dirname(__file__)
 root_path = os.path.join(curr_path, "..")
@@ -24,17 +25,14 @@ from issuies.user import User
 
 from DB_Implementatins import db_implementation
 
-
 IT4All_router = APIRouter()
-
-
-
 
 
 @IT4All_router.get("/get_connections_in_network/network_id")
 async def get_connections_in_network(network_id):
     connections = await db_implementation.get_network_connections(network_id)
     return connections
+
 
 @IT4All_router.post("/add_file/")
 async def add_file(current_user: User = Depends(authorization.check_permission_of_technician),
@@ -55,6 +53,9 @@ async def add_file(current_user: User = Depends(authorization.check_permission_o
     return "The file was received successfully."
 
 
-# @app.get("/get_connections_by_graph/{network_id}")
-# async def get_connections_by_graph(network_id):
-
+@IT4All_router.get("/get_connections_by_graph/{network_id}")
+async def get_connections_by_graph(network_id):
+    list_devices = await get_devices_by_network_id(network_id)
+    if list_devices:
+        return list_devices
+    return "something not good"

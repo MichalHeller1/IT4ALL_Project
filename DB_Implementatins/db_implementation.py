@@ -107,3 +107,11 @@ WHERE source_device.Network = %s
 ;"""
     val = network_id
     return await db_access.get_network_connections_from_db(select_communication_query, val)
+
+
+async def get_devices_by_network_id(network_id):
+    query = """SELECT * FROM Device WHERE MacAddress = %s ON Network.id=Device.Network"""
+    val = network_id
+    networks = await db_access.get_data_from_db(query, val)
+    if networks:
+        return UserInDB(**networks)
