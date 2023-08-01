@@ -2,7 +2,6 @@ from io import BytesIO
 from mac_vendor_lookup import MacLookup
 from scapy.all import *
 from scapy.layers.inet import IP
-from Logger import logger
 from issuies import network
 from issuies.connection import Connection
 from issuies.device import Device

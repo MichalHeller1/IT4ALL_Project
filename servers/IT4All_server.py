@@ -7,9 +7,19 @@ from issuies import network
 from issuies.network import Network
 from issuies.user import User
 
+from DB_Implementatins import db_implementation
+
 
 IT4All_router = APIRouter()
 
+
+
+
+
+@IT4All_router.get("/get_connections_in_network/network_id")
+async def get_connections_in_network(network_id):
+    connections = await db_implementation.get_network_connections(network_id)
+    return connections
 
 @IT4All_router.post("/add_file/")
 async def add_file(current_user: User = Depends(authorization.check_permission_of_technician),

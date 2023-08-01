@@ -11,7 +11,7 @@ app.include_router(user_router)
 
 @app.get("/")
 async def root():
-    database_retrievals.visualize_network_graph(database_retrievals.)
+    # database_retrievals.visualize_network_graph(database_retrievals.connections)
     return "the app is running..."
 
 

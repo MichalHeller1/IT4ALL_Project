@@ -59,4 +59,18 @@ def visualize_network_graph(connections_lst):
 
 
 # Call the function with your connections data
+device1 = Device(vendor="some vendor 1", mac_address="1", network_id=1)
+device2 = Device(vendor="some vendor 2", mac_address="2", network_id=1)
+device3 = Device(vendor="some vendor 3", mac_address="3", network_id=1)
+device4 = Device(vendor="some vendor 4", mac_address="4", network_id=1)
+device5 = Device(vendor="some vendor 5", mac_address="5", network_id=1)
 
+connection = DevicesConnection(src_device=device1, dst_device=device2, protocol="HTTP")
+connection2 = DevicesConnection(src_device=device1, dst_device=device3, protocol="HTTP")
+connection3 = DevicesConnection(src_device=device2, dst_device=device1, protocol="HTTP")
+connection4 = DevicesConnection(src_device=device3, dst_device=device2, protocol="HTTP")
+connection5 = DevicesConnection(src_device=device1, dst_device=device5, protocol="HTTP")
+connection6 = DevicesConnection(src_device=device1, dst_device=device4, protocol="HTTP")
+connection7 = DevicesConnection(src_device=device5, dst_device=device1, protocol="HTTP")
+connections = [connection, connection2, connection3, connection4, connection5, connection6, connection7]
+visualize_network_graph(connections)

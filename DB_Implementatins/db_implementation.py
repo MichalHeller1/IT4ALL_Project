@@ -1,3 +1,5 @@
+import pymysql
+from fastapi import Depends
 from pymysql import IntegrityError
 
 from issuies.user import UserInDB, User
@@ -35,9 +37,9 @@ async def add_new_network(network: Network):
 
 async def add_device(device: Device):
     try:
-        query = query = """INSERT INTO Device (MacAddress, Provider, Network) 
+        query = """INSERT INTO Device (MacAddress, Vendor, Network) 
                         VALUES (%s, %s, %s) 
-                        ON DUPLICATE KEY UPDATE Provider=VALUES(Provider), Network=VALUES(Network)"""
+                        ON DUPLICATE KEY UPDATE Vendor=VALUES(Vendor), Network=VALUES(Network)"""
 
         val = (device.mac_address, device.vendor, device.network_id)
         device_id = await db_access.add_new_data_to_db(query, val)
@@ -85,3 +87,22 @@ async def check_permission(user: User):
     # val = (user.username, user.password, user.phone, user.email)
     # await db_access.add_new_data_to_db(query, val)
     return True
+
+
+def get_network_connections(network_id):
+    select_communication_query = """
+    SELECT C.Protocol,
+      source_device.MacAddress as MacSource,
+      source_device.Provider as SourceProvider,
+      source_device.Network,
+      destination_device.MacAddress as MacDestination,
+      destination_device.Provider as DestinationProvider
+FROM Connection C
+Join Device source_device
+ON C.Source=source_device.MacAddress
+Join Device destination_device
+ON C.Destination=destination_device.MacAddress
+WHERE source_device.Network = %s
+;"""
+    val = network_id
+    return db_access.get_network_connections_from_db(select_communication_query, val)
