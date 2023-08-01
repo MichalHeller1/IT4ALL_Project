@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from issuies.device import Device
+from issues.device import Device
 
 
 class Connection(BaseModel):

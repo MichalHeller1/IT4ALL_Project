@@ -1,27 +1,13 @@
 import pymysql
 from fastapi import Depends
 from pymysql import IntegrityError
-# from controller.CRUD.user import UserInDB
 
-from issuies.user import UserInDB, User
+from DB_Access.db_access import get_network_connections_from_db
+from issues.user import UserInDB, User
 from DB_Access import db_access
-from issuies.connection import Connection
-from issuies.device import Device
-from issuies.network import Network
-
-
-async def get_user_from_db(user_name):
-    query = """SELECT * FROM Technician WHERE Name = %s"""
-    val = user_name
-    user = await db_access.get_data_from_db(query, val)
-
-    if user:
-        name = user[1]
-        password = user[2]
-        phone = user[3]
-        email = user[4]
-    if user:
-        return User(username=name, password=password, phone=phone, email=email)
+from issues.connection import Connection, DevicesConnection
+from issues.device import Device
+from issues.network import Network, current_network
 
 
 async def add_new_network(network: Network):
@@ -81,32 +67,17 @@ async def add_technician(user: User):
     await db_access.add_new_data_to_db(query, val)
 
 
-async def check_permission(user: User):
-    # query = """
-    #         ...
-    #     """
-    # val = (user.username, user.password, user.phone, user.email)
-    # await db_access.add_new_data_to_db(query, val)
-    return True
-
-
-async def get_network_connections(network_id):
-    print("i am i the get_network_connections func")
-    select_communication_query = """
-    SELECT C.Protocol,
-      source_device.MacAddress as MacSource,
-      source_device.Vendor as SourceVendor,
-      destination_device.MacAddress as MacDestination,
-      destination_device.Vendor as DestinationVendor
-FROM Connection C
-Join Device source_device
-ON C.Source=source_device.MacAddress
-Join Device destination_device
-ON C.Destination=destination_device.MacAddress
-WHERE source_device.Network = %s
-;"""
-    val = network_id
-    return await db_access.get_network_connections_from_db(select_communication_query, val)
+async def check_permission(user: User, client_id):
+    query = """
+                SELECT Technician.id
+                FROM Technician
+                JOIN Permissions ON Technician.id = Permissions.Technician
+                JOIN Client ON Permissions.Client = Client.id
+                WHERE Technician.Name = %s AND Client.id = %s
+            """
+    val = (user.username, client_id)
+    permission = bool(db_access.get_data_from_db(query, val))
+    return permission
 
 
 async def get_client_devices(client_id):

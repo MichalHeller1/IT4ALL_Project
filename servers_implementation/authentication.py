@@ -4,8 +4,8 @@ from jose import jwt
 from passlib.context import CryptContext
 from passlib.exc import UnknownHashError
 
-from DB_Implementatins import db_implementation
-from issuies.user import UserInDB, User
+from DB_Implementatins import db_additions_implementation, db_retrievals_implementation
+from issues.user import UserInDB, User
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = "6hFiwU20LvHCMcZZlDiExQE_n9sSyyBomFiltXrxF9c"
@@ -21,7 +21,7 @@ def verify_password(plain_password, hashed_password):
 
 
 async def authenticate_user(user_name: str, password: str):
-    user: User = await db_implementation.get_user_from_db(user_name)
+    user: User = await db_retrievals_implementation.get_user_from_db(user_name)
     if not user:
         return None
     if not verify_password(password, user.password):
