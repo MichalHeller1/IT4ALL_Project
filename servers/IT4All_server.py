@@ -1,11 +1,8 @@
-from tkinter import filedialog
-
-import uvicorn
-from fastapi import FastAPI, HTTPException, UploadFile, File, Body, Depends, APIRouter
+from fastapi import  HTTPException, UploadFile, File, Body, Depends, APIRouter
 from starlette import status
-import controller.CRUD.file_actions as file_actions
-
-from controller.CRUD import authorization
+import servers_implementation.file_actions as file_actions
+from global_modules.Logger import logger
+from servers_implementation import authorization
 from issuies import network
 from issuies.network import Network
 from issuies.user import User
@@ -36,6 +33,3 @@ async def add_file(current_user: User = Depends(authorization.check_permission_o
 # @app.get("/get_connections_by_graph/{network_id}")
 # async def get_connections_by_graph(network_id):
 
-
-if __name__ == "__main__":
-    uvicorn.run(IT4All_router, host="127.0.0.1", port=8000)

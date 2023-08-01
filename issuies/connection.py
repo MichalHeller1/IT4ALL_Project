@@ -12,3 +12,4 @@ class Connection(BaseModel):
 class DevicesConnection(BaseModel):
     src_device: Device
     dst_device: Device
+    protocol:str

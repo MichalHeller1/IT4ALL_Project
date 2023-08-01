@@ -1,19 +1,11 @@
-import os
 from io import BytesIO
-from pathlib import Path
-import socket
-
 from mac_vendor_lookup import MacLookup
 from scapy.all import *
-from scapy.layers.inet import IP, Ether
 from scapy.layers.inet import IP
-from scapy.layers.inet6 import IPv6
-
+from Logger import logger
 from issuies import network
 from issuies.connection import Connection
 from issuies.device import Device
-from issuies.network import NetworkInDB
-from app import logger
 
 
 # list_protocol = []
@@ -78,11 +70,7 @@ def get_vendor(mac_address):
 
 
 async def get_device(mac_address):
-    vendor = "no vendor."
-    try:
-        vendor = get_vendor(mac_address)
-    except RuntimeWarning :
-        logger.info('the device has no vendor')
+    vendor = "some_vendor."
     network_id = network.current_network.network_id
     device = Device(vendor=vendor, mac_address=mac_address, network_id=network_id)
     return device
@@ -99,28 +87,12 @@ async def open_pcap_file(pcap_file):
     return packets
 
 
-async def get_devices_to_add(pcap_file):
-    devices = {}
-    packets = await open_pcap_file(pcap_file)
-    for packet in packets:
-        if packet.haslayer("Ether"):
-            src_mac, dst_mac = get_mac_address(packet)
-            if packet.haslayer("IP"):
-                protocol = get_protocol(packet)
-            connection = Connection(src_mac_address=src_mac, dst_mac_address=dst_mac, protocol=protocol)
-            if not devices.get(src_mac):
-                src_device = await get_device(src_mac)
-                devices[src_mac] = {"device": src_device,
-                                    "connections": []}
+def check_protocol_exist(connections_lst, protocol):
+    for connection in connections_lst:
+        if protocol == connection.protocol:
+            return True
 
-            if connection not in devices[src_mac]["connections"]:
-                devices[src_mac]["connections"].append(connection)
-            if not devices.get(dst_mac):
-                dst_device = await get_device(dst_mac)
-                devices[dst_mac] = {"device": dst_device,
-                                    "connections": []}
-
-    return dict(devices)
+    return False
 
 
 async def get_devices_to_add(pcap_file):
@@ -139,6 +111,9 @@ async def get_devices_to_add(pcap_file):
 
             if connection not in devices[src_mac]["connections"]:
                 devices[src_mac]["connections"].append(connection)
+            elif not check_protocol_exist(devices[src_mac]["connections"], connection.protocol):
+                devices[src_mac]["connections"].append(connection)
+
             if not devices.get(dst_mac):
                 dst_device = await get_device(dst_mac)
                 devices[dst_mac] = {"device": dst_device,

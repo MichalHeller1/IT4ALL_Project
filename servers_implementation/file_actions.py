@@ -1,11 +1,11 @@
-from fastapi import HTTPException, Depends
+from fastapi import HTTPException
 from starlette import status
 
 import DB_Implementatins.db_implementation as db_implementation
 
-import packets_file_system
-from issuies import network, device
-from issuies.network import NetworkInDB, Network
+from global_modules import packets_file_system
+from issuies import network
+from issuies.network import NetworkInDB
 
 
 def check_the_file(file):
