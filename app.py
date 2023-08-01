@@ -1,8 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
-from controller.IT4All_server import IT4All_router
-from controller.user_server import user_router
-
+from servers.IT4All_server import IT4All_router
+from servers.user_server import user_router
+from servers_implementation import database_retrievals
 
 app = FastAPI()
 
@@ -11,6 +11,7 @@ app.include_router(user_router)
 
 @app.get("/")
 async def root():
+    # database_retrievals.visualize_network_graph(database_retrievals.connections)
     return "the app is running..."
 
 

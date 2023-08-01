@@ -1,15 +1,15 @@
 from typing import Union, Optional, Dict
 
-from fastapi import Depends, HTTPException, status, Request, Response, encoders
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 
 from fastapi.security.utils import get_authorization_scheme_param
-from jose import JWTError, jwt, ExpiredSignatureError
+from jose import jwt, ExpiredSignatureError
 from pydantic import BaseModel
 
 from DB_Implementatins import db_implementation
-from controller.CRUD import authentication
+from servers_implementation import authentication
 
 SECRET_KEY = "6hFiwU20LvHCMcZZlDiExQE_n9sSyyBomFiltXrxF9c"
 ALGORITHM = "HS256"
@@ -46,11 +46,6 @@ class OAuth2PasswordBearerWithCookie(OAuth2):
 
 
 oauth2_cookie_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
 
 
 class TokenData(BaseModel):

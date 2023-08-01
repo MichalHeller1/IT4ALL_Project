@@ -11,8 +11,6 @@ from issuies.network import Network
 
 
 async def get_user_from_db(user_name):
-    print(user_name)
-
     query = """SELECT * FROM Technician WHERE Name = %s"""
     val = user_name
     user = await db_access.get_data_from_db(query, val)
@@ -24,9 +22,6 @@ async def get_user_from_db(user_name):
         email = user[4]
     if user:
         return User(username=name, password=password, phone=phone, email=email)
-
-        # async def insert_new_network2(new_network: Network = Depends(create_new_network())):
-        #     print( f"network added.{new_network}")
 
 
 async def add_new_network(network: Network):
@@ -43,12 +38,11 @@ async def add_new_network(network: Network):
 
 async def add_device(device: Device):
     try:
-        query = """INSERT IGNORE into Device (MacAddress,Provider,Network) 
-                                values (%s, %s, %s)"""
+        query = """INSERT INTO Device (MacAddress, Vendor, Network) 
+                        VALUES (%s, %s, %s) 
+                        ON DUPLICATE KEY UPDATE Vendor=VALUES(Vendor), Network=VALUES(Network)"""
+
         val = (device.mac_address, device.vendor, device.network_id)
-        query = """INSERT IGNORE into Device (MacAddress,Provider,Network)
-                                    values (%s, %s, %s)"""
-        val = (device.mac_address, device.operation_system, device.network_id)
         device_id = await db_access.add_new_data_to_db(query, val)
     except IntegrityError as e:
         raise e

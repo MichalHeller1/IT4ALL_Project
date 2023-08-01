@@ -19,6 +19,9 @@ sqlCreateTechnicianTable = """
     Email varchar(30)
     )
 """
+#
+# cursor = connection.cursor()
+# cursor.execute(sqlCreateTechnicianTable)
 
 sqlCreateNetworkTable = """
     CREATE TABLE Network(
@@ -125,5 +128,5 @@ VALUES
 
 
 with connection.cursor() as cursor:
-    cursor.execute(insertPermissions)
+    cursor.execute(insertTechnicians)
     connection.commit()

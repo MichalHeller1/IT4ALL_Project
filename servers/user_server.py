@@ -1,14 +1,10 @@
-import uvicorn
 from datetime import timedelta
-from fastapi import  Response, Depends, HTTPException, encoders, APIRouter
+from fastapi import  Response,encoders, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
-import controller.CRUD.authentication as authorization
-
+import servers_implementation.authentication as authorization
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-import uvicorn
-
-from app import logger
+from fastapi.security import HTTPBasic
+from global_modules.Logger import logger
 
 security = HTTPBasic()
 
@@ -40,6 +36,3 @@ async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depen
     logger.info(f"{current_user} log in .")
     return {"access_token": access_token, "token_type": "bearer"}
 
-
-if __name__ == "__main__":
-    uvicorn.run(user_router, host="127.0.0.1", port=8000)
