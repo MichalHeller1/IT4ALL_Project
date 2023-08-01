@@ -9,7 +9,7 @@ from issues import network, client
 from issues.network import Network
 from issues.user import User
 
-from DB_Implementatins import db_implementation
+from DB_Implementatins import db_additions_implementation
 
 
 IT4All_router = APIRouter()
@@ -19,7 +19,7 @@ IT4All_router = APIRouter()
 async def get_connections_in_network(network_id,
                                      current_user: User = Depends(authorization.check_permission_of_technician)):
     try:
-        connections = await db_implementation.get_network_connections(network_id)
+        connections = await database_retrievals.get_connections_in_specific_network(network_id)
         print(connections)
     except Exception as e:
 

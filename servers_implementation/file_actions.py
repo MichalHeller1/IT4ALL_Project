@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from starlette import status
 
-import DB_Implementatins.db_implementation as db_implementation
+import DB_Implementatins.db_additions_implementation as db_implementation
 
 from global_modules import packets_file_system
 from issues import network
