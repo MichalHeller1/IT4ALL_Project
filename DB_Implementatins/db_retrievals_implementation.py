@@ -2,6 +2,7 @@ from DB_Access import db_access
 from issues.user import User, UserInDB
 import codecs
 from issues.device import Device
+from issues.client import Client
 
 
 async def get_user_from_db(user_name):
@@ -69,3 +70,13 @@ async def get_devices_by_network_id(network_id):
     return None
 
 
+async def get_client(client_id):
+    query = """SELECT * 
+                FROM Client 
+                WHERE Client.id = %s"""
+    val = (client_id)
+    client = await db_access.get_data_from_db(query, val)
+    if client:
+        return Client(client_id=client[0], name=client[1], address=client[2], phone=client[3], email=client[4])
+        return client
+    return None

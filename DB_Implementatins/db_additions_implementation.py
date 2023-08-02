@@ -1,5 +1,7 @@
 from pymysql import IntegrityError
 from issues.user import User
+
+from issues.user import UserInDB, User
 from DB_Access import db_access
 from issues.connection import Connection, DevicesConnection
 from issues.device import Device

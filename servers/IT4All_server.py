@@ -47,6 +47,11 @@ async def add_file(  # current_user: User = Depends(authorization.check_permissi
     return f"The file was received successfully.now you can get information about {network_id} network id"
 
 
+@IT4All_router.get("/get_client_by_id/{client_id}")
+async def get_client_by_id(client_id):
+    return await db_retrievals_implementation.get_client(client_id)
+
+
 @IT4All_router.get(
     "/get_connections_in_network/{network_id}/")  # current_user: User = Depends(authorization.check_permission_of_technician))
 async def get_connections_in_network(  # current_user: User = Depends(authorization.check_permission_of_technician),
