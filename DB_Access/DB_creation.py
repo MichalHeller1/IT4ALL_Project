@@ -69,6 +69,19 @@ sqlCreatePermissionsTable = """
 
 """
 
+sqlCreateTechnicianVisitTable = """
+    CREATE TABLE TechnicianVisit(
+    id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    Technician int,
+    Network int,
+    Report varchar(500),
+    FOREIGN KEY (Technician) REFERENCES Technician(id),
+    FOREIGN KEY (Network) REFERENCES Network(id)
+
+    )
+
+"""
+
 insertTechnicians = """INSERT INTO Technician (
     Name,
     Password,
@@ -149,5 +162,5 @@ VALUES
     );"""
 
 with connection.cursor() as cursor:
-    cursor.execute(insertPermissions)
+    cursor.execute(sqlCreateTechnicianVisitTable)
     connection.commit()
