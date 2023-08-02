@@ -2,7 +2,6 @@ import pymysql
 from fastapi import Depends
 from pymysql import IntegrityError
 
-from DB_Access.db_access import get_network_connections_from_db
 from issues.user import UserInDB, User
 from DB_Access import db_access
 from issues.connection import Connection, DevicesConnection

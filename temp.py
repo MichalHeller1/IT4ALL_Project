@@ -1,15 +1,27 @@
-import requests
+from scapy.all import rdpcap, ARP, IP
 
+def analyze_pcap(pcap_file, mac_address):
+    packets = rdpcap(pcap_file)
+    is_end_device = False
+    is_router = False
 
-def get_vendor_by_mac_address(mac_address):
-    url = f"https://api.macvendors.com/{mac_address}"
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.text
+    for packet in packets:
+        if packet.haslayer(ARP):
+            arp_packet = packet[ARP]
+            if arp_packet.hwsrc == mac_address:
+                is_end_device = True
+            elif arp_packet.psrc != arp_packet.hwdst:
+                is_router = True
+
+    if is_end_device and not is_router:
+        return "End Device"
+    elif is_router and not is_end_device:
+        return "Router"
     else:
-        return "Unable to fetch vendor information."
+        return "Unknown"
 
+pcap_file = "evidence04.pcap"
+mac_address = "00:12:79:45:a4:bb"
 
-mac_address = "00:21:70:4d:4f:ae"
-vendor = get_vendor_by_mac_address(mac_address)
-print(vendor)
+device_type = analyze_pcap(pcap_file, mac_address)
+print(f"The device with MAC address {mac_address} is a {device_type}.")
