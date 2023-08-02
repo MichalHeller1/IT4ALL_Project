@@ -1,4 +1,5 @@
 from DB_Access import db_access
+from issues import client
 from issues.user import User, UserInDB
 import codecs
 from issues.device import Device
@@ -75,8 +76,11 @@ async def get_client(client_id):
                 FROM Client 
                 WHERE Client.id = %s"""
     val = (client_id)
-    client = await db_access.get_data_from_db(query, val)
-    if client:
-        return Client(client_id=client[0], name=client[1], address=client[2], phone=client[3], email=client[4])
-        return client
-    return None
+    client_from_db = await db_access.get_data_from_db(query, val)
+    if client_from_db:
+        client.current_client = Client(client_id=client_from_db[0], name=client_from_db[1],
+                                       address=client_from_db[2], phone=client_from_db[3], email=client_from_db[4])
+
+        return client.current_client
+    else:
+        return None

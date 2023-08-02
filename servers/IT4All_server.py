@@ -1,13 +1,13 @@
 from fastapi import HTTPException, UploadFile, File, Body, Depends, APIRouter, Form
 from fastapi.responses import FileResponse
 from starlette import status
-import servers_implementation.file_actions as file_actions
+import servers_implementation.file_db_actions as file_actions
 from global_modules.Logger import logger
 from issues.client import ClientId
-from servers_implementation import authorization, database_retrievals
-from issues import network, client
+from servers_implementation import authorization, database_retrievals, database_adding
+from issues import network, client, visit
 from issues.network import Network
-from issues.user import User
+from issues.user import User, UserInDB
 
 from DB_Implementatins import db_additions_implementation, db_retrievals_implementation
 
@@ -17,9 +17,10 @@ IT4All_router = APIRouter()
 @IT4All_router.post("/send_client_id")
 async def get_client_id(client_id: str = Form(...)):
     c_id = int(client_id)
-    if await database_retrievals.check_is_c_id_in_DB(c_id) != None:
-        client.current_client_id = ClientId(client_id=c_id)
-        return "ok.now you can do your actions to get or post to this client."
+    current_client = await database_retrievals.check_client_id_in_db(c_id)
+    if current_client:
+        return f"ok.now you can do your actions to get or post to this client." \
+               f"the client you work with is:{current_client}"
     else:
         return "there is no client with this id."
 
@@ -35,15 +36,17 @@ async def add_file(  # current_user: User = Depends(authorization.check_permissi
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Not all requested data was provided")
-    if client.current_client_id.client_id == None:
+    if client.current_client.client_id == None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="you need to send a client-id before you send this request.")
-    network.current_network = Network(client_id=client.current_client_id.client_id, location=location_name,
+    network.current_network = Network(client_id=client.current_client.client_id, location=location_name,
                                       name=network_name)
-    file_actions.check_the_file(file.filename)
 
+    file_actions.check_the_file(file.filename)
+    current_user_id = 4
     network_id = await file_actions.add_the_received_file_to_db(file)
+    await database_adding.add_new_visit(network_id, current_user_id)
     return f"The file was received successfully.now you can get information about {network_id} network id"
 
 
@@ -94,3 +97,19 @@ async def get_devices_protocols(  # current_user: User = Depends(authorization.c
     if protocols:
         return protocols
     return "the macAddress devise has no protocols."
+
+
+@IT4All_router.post("/add_report_about_the_network_id")
+async def add_report_about_the_network_id(report: str = Body(...)):
+    current_visit_id = visit.current_visit.visit_id
+    try:
+        await database_adding.add_report_to_the_current_visit(current_visit_id, report)
+        return "thank you for your feedback!"
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="error in the adding the report.")
+
+# @IT4All_router.get("/get_reports_about_specific_network_id/{network_id}")
+# async def get_reports_about_specific_network_id(network_id):
+#

@@ -81,7 +81,7 @@ async def get_current_user(token: str = Depends(oauth2_cookie_scheme)):
 
 
 async def check_permission_of_technician(user=Depends(get_current_user)):
-    client_id = client.current_client_id
+    client_id = client.current_client
     if not client_id.client_id:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

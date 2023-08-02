@@ -12,4 +12,4 @@ class Client(ClientId):
     email: str = None
 
 
-current_client_id = ClientId()
+current_client = Client()
