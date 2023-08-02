@@ -51,4 +51,3 @@ async def get_devices_by_network_id(network_id):
     return None
 
 
-get_devices_by_network_id(8)

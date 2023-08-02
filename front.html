@@ -47,6 +47,7 @@
             display: block;
             margin: 20px auto;
         }
+
     </style>
 </head>
 <body>
@@ -94,6 +95,21 @@
 <form id="get-devices-form">
     <label for="devices-network-id">Network ID:</label>
     <input type="text" id="devices-network-id" name="network_id" required>
+    <button type="submit">Get Devices</button>
+</form>
+
+<h2>Get Device Protocols By Device MacAddress</h2>
+<form id="get-protocols-form">
+    <label for="device-id">Device ID:</label>
+    <input type="text" id="device-id" name="device_id" required>
+    <button type="submit">Get Protocols</button>
+</form>
+
+
+<h2>Get Client Devices</h2>
+<form id="get-client-devices-form">
+    <label for="client-id">Client ID:</label>
+    <input type="text" id="client-id2" name="client_id" required>
     <button type="submit">Get Devices</button>
 </form>
 
@@ -187,15 +203,6 @@
         method: 'GET'
     })
     .then(response => {
-        // Check if the response status is OK
-        if (!response.ok) {
-            return response.text().then(errorMessage => {
-                // Display an alert with the error message from the response
-                alert(errorMessage);
-                throw new Error('Network response was not OK');
-            });
-        }
-        // Parse the response as a Blob (binary data)
         return response.blob();
     })
     .then(blob => {
@@ -221,6 +228,29 @@
             .catch(error => alert('Error:', error));
         });
 
+  document.getElementById('get-protocols-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const deviceId = document.getElementById('device-id').value;
+        fetch(`http://127.0.0.1:8000/device_protocols/${deviceId}`, {
+            method: 'GET'
+        })
+        .then(response => response.json())
+        .then(data => alert(JSON.stringify(data)))
+        .catch(error => alert('Error:', error));
+    });
+
+        document.getElementById('get-client-devices-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const clientId2 = document.getElementById('client-id2').value;
+
+            // Send a GET request to the FastAPI endpoint
+            fetch(`http://127.0.0.1:8000/get_client_devices/${clientId2}`, {
+                method: 'GET'
+            })
+        .then(response => response.json())
+        .then(data => alert(JSON.stringify(data)))
+        .catch(error => alert('Error:', error));
+        });
 
 </script>
 </body>
