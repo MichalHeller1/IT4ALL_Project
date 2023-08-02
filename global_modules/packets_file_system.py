@@ -72,11 +72,11 @@ def get_vendor(mac_address):
     if response.status_code == 200:
         return response.text
     else:
-        return "Unable to fetch vendor information."
+        return "None"
 
 
 async def get_device(mac_address):
-    vendor = "some_vendor."
+    vendor = get_vendor(mac_address)
     network_id = network.current_network.network_id
     device = Device(vendor=vendor, mac_address=mac_address, network_id=network_id)
     return device
