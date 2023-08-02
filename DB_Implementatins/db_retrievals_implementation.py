@@ -1,10 +1,8 @@
-import codecs
-
 from DB_Access import db_access
 from issues.user import User, UserInDB
+import codecs
 from issues.device import Device
-
-from IT4ALL_Project.DB_Access.db_access import get_multiple_data_from_db
+from issues.client import Client
 
 
 async def get_user_from_db(user_name):
@@ -22,10 +20,9 @@ async def get_user_from_db(user_name):
 
 
 async def get_network_connections_from_db(query, val):
-    connections_in_network = get_multiple_data_from_db(query, val)
-    print(connections_in_network)
-    decoded_connections = []
+    connections_in_network = await db_access.get_multiple_data_from_db(query, val)
 
+    decoded_connections = []
     for con in connections_in_network:
         decoded_connection = []
         for item in con:
@@ -70,4 +67,16 @@ async def get_devices_by_network_id(network_id):
     devices = await db_access.get_multiple_data_from_db(query, val)
     if devices:
         return [Device(mac_address=device[0], vendor=device[1], network_id=device[2]) for device in devices]
+    return None
+
+
+async def get_client(client_id):
+    query = """SELECT * 
+                FROM Client 
+                WHERE Client.id = %s"""
+    val = (client_id)
+    client = await db_access.get_data_from_db(query, val)
+    if client:
+        return Client(client_id=client[0], name=client[1], address=client[2], phone=client[3], email=client[4])
+        return client
     return None

@@ -9,14 +9,6 @@ from issues.device import Device
 import requests
 
 
-# list_protocol = []
-# list_mac_dst = []
-# list_mac_src = []
-# list_IP_dst = []
-# list_IP_src = []
-
-
-# find the protocol name from number that getting
 def proto_name_by_num(proto_num):
     for name, num in vars(socket).items():
         if name.startswith("IPPROTO") and proto_num == num:
@@ -24,34 +16,13 @@ def proto_name_by_num(proto_num):
     return "Protocol not found"
 
 
-# this func check the file if his extension is cap,pcap or pcapng
 def file_integrity_check(file):
     split_tup = os.path.splitext(file)
     file_extension = split_tup[1]
-    # print(split_tup)
     if file_extension == ".pcap":
         return True
     # TODO remember the cap,pcapng
     return False
-
-
-# def read_from_line_file(line):
-#     src_ip = str(line[IP].src)
-#     list_IP_src.append(src_ip)
-#     dst_ip = line[IP].dst
-#     list_IP_dst.append(dst_ip)
-#     src_mac = line[Ether].src
-#     list_mac_src.append(src_mac)
-#     dst_mac = line[Ether].dst
-#     list_mac_dst.append(dst_mac)
-#     list_protocol.append(proto_name_by_num(int(line[IP].proto)))
-
-
-# def read_from_file_line_to_line(file):
-#     packets = rdpcap(file)
-#     for line in packets:
-#         read_from_line_file(line)
-#     return True
 
 
 def check_file(file):
