@@ -16,6 +16,13 @@ async def get_data_from_db(query, val):
     return data
 
 
+async def get_multiple_data_from_db(query, val):
+    with connection.cursor() as cursor:
+        cursor.execute(query, val)
+        data = cursor.fetchall()
+    return data
+
+
 async def get_network_connections_from_db(query, val):
     with connection.cursor() as cursor:
         cursor.execute(query, val)
@@ -33,8 +40,6 @@ async def get_network_connections_from_db(query, val):
         decoded_connections.append(decoded_connection)
 
     return decoded_connections
-
-
 
 
 async def get_client_devices_from_db(query, val):

@@ -41,8 +41,13 @@ async def get_network_connections(network_id):
 
 
 async def get_devices_by_network_id(network_id):
-    query = """SELECT * FROM Device WHERE MacAddress = %s ON Network.id=Device.Network"""
-    val = network_id
-    networks = await db_access.get_data_from_db(query, val)
-    if networks:
-        return UserInDB(**networks)
+    query = """SELECT Device.*, %s AS network_id 
+                FROM Device 
+                JOIN Network ON Device.Network = %s"""
+    val = (network_id, network_id)
+    devices = await db_access.get_multiple_data_from_db(query, val)
+    if devices:
+        return devices
+    return None
+
+

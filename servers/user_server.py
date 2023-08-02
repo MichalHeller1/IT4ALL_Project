@@ -1,5 +1,5 @@
 from datetime import timedelta
-from fastapi import  Response,encoders, APIRouter
+from fastapi import Response, encoders, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm
 import servers_implementation.authentication as authorization
 from fastapi import Depends, HTTPException, status
@@ -35,4 +35,3 @@ async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depen
     )
     logger.info(f"{current_user} log in .")
     return {"access_token": access_token, "token_type": "bearer"}
-
