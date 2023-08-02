@@ -1,7 +1,10 @@
 import uvicorn
 from fastapi import FastAPI
-from servers.IT4All_server import IT4All_router
-from servers.user_server import user_router
+from servers.device_server import IT4All_router as device
+from servers.technician_server import IT4All_router as technician
+from servers.client_server import IT4All_router as client
+from servers.network_server import IT4All_router as network
+
 from servers_implementation import database_retrievals
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -23,8 +26,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(IT4All_router)
-app.include_router(user_router)
+app.include_router(device)
+app.include_router(technician)
+app.include_router(client)
+app.include_router(network)
+
+
 
 @app.get("/")
 async def root():

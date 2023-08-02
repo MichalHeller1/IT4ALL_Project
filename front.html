@@ -113,6 +113,15 @@
     <button type="submit">Get Devices</button>
 </form>
 
+
+<h2>Add Report About the Network ID</h2>
+<form id="add-report-form">
+    <label for="report">Report:</label>
+    <input type="text" id="report" name="report" required><br>
+    <button type="submit">Add Report</button>
+</form>
+
+
 <script>
 
     // Function to handle the login form submission
@@ -266,6 +275,42 @@
         .then(data => alert(JSON.stringify(data)))
         .catch(error => alert('Error:', "the client id has no devices."));
         });
+
+
+document.getElementById('add-report-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const report = document.getElementById('report').value;
+
+        // Create an object with the report data
+        const requestData = {
+            report: report
+        };
+
+        // Send the POST request to the FastAPI endpoint
+        fetch('http://127.0.0.1:8000/add_report_about_the_network_id', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error('Error adding the report.');
+            }
+        })
+        .then(data => {
+            // Handle the response data and display it in an alert
+            alert(data);
+        })
+        .catch(error => {
+            // Handle errors and display the appropriate message
+            alert(error.message);
+        });
+    });
+
 
 </script>
 </body>
