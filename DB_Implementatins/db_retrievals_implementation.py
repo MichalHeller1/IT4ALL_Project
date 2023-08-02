@@ -1,6 +1,7 @@
 from DB_Access import db_access
 from issues.user import User, UserInDB
 import codecs
+from issues.device import Device
 
 
 async def get_user_from_db(user_name):
@@ -64,5 +65,7 @@ async def get_devices_by_network_id(network_id):
     val = (network_id, network_id)
     devices = await db_access.get_multiple_data_from_db(query, val)
     if devices:
-        return devices
+        return [Device(mac_address=device[0], vendor=device[1], network_id=device[2]) for device in devices]
     return None
+
+

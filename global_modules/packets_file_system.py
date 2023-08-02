@@ -1,10 +1,12 @@
 from io import BytesIO
+import os
 from mac_vendor_lookup import MacLookup
 from scapy.all import *
 from scapy.layers.inet import IP
 from issues import network
 from issues.connection import Connection
 from issues.device import Device
+import requests
 
 
 def proto_name_by_num(proto_num):
@@ -36,11 +38,16 @@ def get_mac_address(packet):
 
 
 def get_vendor(mac_address):
-    return MacLookup().lookup(mac_address)
+    url = f"https://api.macvendors.com/{mac_address}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.text
+    else:
+        return "None"
 
 
 async def get_device(mac_address):
-    vendor = "some_vendor."
+    vendor = get_vendor(mac_address)
     network_id = network.current_network.network_id
     device = Device(vendor=vendor, mac_address=mac_address, network_id=network_id)
     return device
