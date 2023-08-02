@@ -1,9 +1,5 @@
-import pymysql
-from fastapi import Depends
 from pymysql import IntegrityError
-
-from DB_Access.db_access import get_network_connections_from_db
-from issues.user import UserInDB, User
+from issues.user import User
 from DB_Access import db_access
 from issues.connection import Connection, DevicesConnection
 from issues.device import Device
@@ -87,7 +83,7 @@ async def get_client_devices(client_id):
         WHERE Network.Client=%s
         """
     val = client_id
-    devices = await db_access.get_client_devices_from_db(query, val)
+    devices = await db_access.get_multiple_data_from_db(query, val)
     return [Device(mac_address=device[0], vendor=device[1], network_id=device[2]) for device in devices]
 
 
@@ -98,5 +94,5 @@ async def get_device_protocols(mac_address):
     GROUP BY Protocol
     """
     val = mac_address, mac_address
-    return await db_access.invoke_query(query, val)
+    return await db_access.get_multiple_data_from_db(query, val)
 

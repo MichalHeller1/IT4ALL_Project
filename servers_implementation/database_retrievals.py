@@ -10,10 +10,10 @@ async def visualize_network_graph(connections_lst):
 
 
 async def get_connections_in_specific_network(network_id):
-    decoded_connections = await db_retrievals_implementation.get_network_connections(network_id)
-    full_connections = []
+    connections_lst = await db_retrievals_implementation.get_network_connections(network_id)
+    complete_connections = []
 
-    for connection in decoded_connections:
+    for connection in connections_lst:
         mac_address1 = connection[1]
         vendor1 = connection[2]
         network_id1 = 1
@@ -26,9 +26,9 @@ async def get_connections_in_specific_network(network_id):
         device2 = Device(vendor=vendor2, mac_address=mac_address2, network_id=network_id2)
 
         full_connection = DevicesConnection(src_device=device1, dst_device=device2, protocol=connection[0])
-        full_connections.append(full_connection)
+        complete_connections.append(full_connection)
 
-    return full_connections
+    return complete_connections
 
 
 async def get_lst_of_devices(network_id):

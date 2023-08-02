@@ -133,13 +133,9 @@
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-            // Handle the response data, for example, save the access token to local storage
-            localStorage.setItem('access_token', data.access_token);
-            alert('Login successful! Access Token saved.');
-        })
-        .catch(error => alert('Error:', error));
+            .then(response => response.text())
+            .then(data => alert(data))
+            .catch(error => alert('Error:', error));
     });
 
         document.getElementById('send-client-id-form').addEventListener('submit', function (event) {
@@ -196,26 +192,45 @@
     });
 
 
-       document.getElementById('get-connections-form').addEventListener('submit', function (event) {
-        event.preventDefault();
-        const networkId = document.getElementById('network-id').value;
-        fetch(`http://127.0.0.1:8000/get_connections_in_network/${networkId}/`, {
-        method: 'GET'
-    })
-    .then(response => {
-        return response.blob();
-    })
-    .then(blob => {
-        // Create a temporary URL for the image data
-        const imageUrl = URL.createObjectURL(blob);
+        document.getElementById('get-connections-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const networkId = document.getElementById('network-id').value;
 
-        // Display the image in the HTML page
-        const imagePreview = document.getElementById('image-preview');
-        imagePreview.src = imageUrl;
-        imagePreview.style.display = 'block';
-    })
-    .catch(error => alert('Error:', error));
-});
+            fetch(`http://127.0.0.1:8000/get_connections_in_network/${networkId}/`, {
+                method: 'GET'
+            })
+            .then(response => {
+                if (response.status === 200) {
+                    // If the response is successful (200), check the content type
+                    const contentType = response.headers.get('content-type');
+                    if (contentType && contentType.startsWith('image/png')) {
+                        // If the response is a PNG image, display the image
+                        return response.blob();
+                    } else {
+                        // If the response is not an image, return the text content
+                        return response.text();
+                    }
+                } else {
+                    throw new Error('Unexpected response from the server.');
+                }
+            })
+            .then(data => {
+                if (typeof data === 'object') {
+                    // Data is a blob (image), display the image in the HTML page
+                    const imageUrl = URL.createObjectURL(data);
+                    const imagePreview = document.getElementById('image-preview');
+                    imagePreview.src = imageUrl;
+                    imagePreview.style.display = 'block';
+                } else {
+                    // Data is a text message, display an alert with the message
+                    alert(data);
+                }
+            })
+            .catch(error => {
+                // Handle errors and display the appropriate message
+                alert(error.message);
+            });
+        });
 
         document.getElementById('get-devices-form').addEventListener('submit', function (event) {
             event.preventDefault();
@@ -249,7 +264,7 @@
             })
         .then(response => response.json())
         .then(data => alert(JSON.stringify(data)))
-        .catch(error => alert('Error:', error));
+        .catch(error => alert('Error:', "the client id has no devices."));
         });
 
 </script>

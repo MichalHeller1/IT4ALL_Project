@@ -71,7 +71,7 @@ async def get_connections_in_network(  # current_user: User = Depends(authorizat
         if connections:
             view_graph = await database_retrievals.visualize_network_graph(connections)
             return FileResponse(view_graph)
-    return "this network_id has no connections."
+        return "this network_id has no connections."
 
 
 @IT4All_router.get("/get_devices_of_network_id/{network_id}")
@@ -85,12 +85,18 @@ async def get_devices_of_network_id(  # current_user: User = Depends(authorizati
 
 
 @IT4All_router.get("/get_client_devices/{client_id}")
-async def get_client_devices(client_id):
+async def get_client_devices(  # current_user: User = Depends(authorization.check_permission_of_technician),
+        client_id):
     devices = await db_additions_implementation.get_client_devices(client_id)
-    return devices
+    if devices:
+        return devices
+    return "the client has no devices."
 
 
 @IT4All_router.get("/device_protocols/{device_id}")
-async def get_devices_protocols(device_id):
+async def get_devices_protocols(  # current_user: User = Depends(authorization.check_permission_of_technician),
+        device_id):
     protocols = await db_additions_implementation.get_device_protocols(device_id)
-    return protocols
+    if protocols:
+        return protocols
+    return "the macAddress devise has no protocols."

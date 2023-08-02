@@ -3,13 +3,13 @@ import asyncio
 from DB_Access.DB_connection import connection
 
 
-async def get_network_connections_from_db(query, val):
-    with connection.cursor() as cursor:
-        cursor.execute(query, val)
-        connection.commit()
-        connections_in_network = cursor.fetchall()
-    print("got all connections")
-    return connections_in_network
+# async def get_network_connections_from_db(query, val):
+#     with connection.cursor() as cursor:
+#         cursor.execute(query, val)
+#         connection.commit()
+#         connections_in_network = cursor.fetchall()
+#     print("got all connections")
+#     return connections_in_network
 
 
 async def invoke_query(query, val):

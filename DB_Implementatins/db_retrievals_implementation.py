@@ -1,5 +1,6 @@
 from DB_Access import db_access
 from issues.user import User, UserInDB
+import codecs
 
 
 async def get_user_from_db(user_name):
@@ -14,6 +15,22 @@ async def get_user_from_db(user_name):
         email = user[4]
     if user:
         return User(username=name, password=password, phone=phone, email=email)
+
+
+async def get_network_connections_from_db(query, val):
+    connections_in_network = await db_access.get_multiple_data_from_db(query, val)
+
+    decoded_connections = []
+    for con in connections_in_network:
+        decoded_connection = []
+        for item in con:
+            if isinstance(item, bytes):
+                decoded_connection.append(codecs.decode(item, 'latin-1'))
+            else:
+                decoded_connection.append(item)
+        decoded_connections.append(decoded_connection)
+
+    return decoded_connections
 
 
 async def get_network_connections(network_id):
@@ -37,7 +54,7 @@ async def get_network_connections(network_id):
             source_device.Network = %s
 ;"""
     val = network_id
-    return await db_access.get_network_connections_from_db(select_communication_query, val)
+    return await get_network_connections_from_db(select_communication_query, val)
 
 
 async def get_devices_by_network_id(network_id):
@@ -49,5 +66,3 @@ async def get_devices_by_network_id(network_id):
     if devices:
         return devices
     return None
-
-
