@@ -98,3 +98,19 @@ async def get_device_protocols(mac_address):
     val = mac_address, mac_address
     return await db_access.get_multiple_data_from_db(query, val)
 
+
+async def add_technician_visit(technician_id, network_id):
+    query = """INSERT INTO TechnicianVisit(Technician, Network)
+        values(%s,%s,%s)
+        """
+    val = technician_id, network_id, "None"
+    return await db_access.add_new_data_to_db(query, val)
+
+
+async def add_report(visit_id, report):
+    query = """UPDATE TechnicianVisit
+                SET Report = %s
+            WHERE TechnicianVisit.id = %s;
+            """
+    val = report, visit_id
+    return await db_access.add_new_data_to_db(query, val)
