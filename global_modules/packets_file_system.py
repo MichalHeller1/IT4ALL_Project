@@ -38,16 +38,19 @@ def get_mac_address(packet):
 
 
 def get_vendor(mac_address):
-    url = f"https://api.macvendors.com/{mac_address}"
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.text
-    else:
-        return "None"
-
+    # try:
+    #     url = f"https://api.macvendors.com/{mac_address}"
+    #     response = requests.get(url)
+    #     if response.status_code == 200:
+    #         return response.text
+    # except Exception as e:
+    #     print(e)
+    # else:
+    return "None"
 
 async def get_device(mac_address):
     vendor = get_vendor(mac_address)
+    print(vendor)
     network_id = network.current_network.network_id
     device = Device(vendor=vendor, mac_address=mac_address, network_id=network_id)
     return device

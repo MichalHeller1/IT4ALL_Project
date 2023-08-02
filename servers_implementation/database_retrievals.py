@@ -37,3 +37,10 @@ async def get_lst_of_devices(network_id):
         return list(devices)
     else:
         return None
+
+
+async def check_is_c_id_in_DB(client_id):
+    try:
+        client = await db_retrievals_implementation.get_client(client_id)
+    except Exception:
+        return None

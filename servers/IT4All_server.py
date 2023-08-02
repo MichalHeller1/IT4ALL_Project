@@ -14,29 +14,14 @@ from DB_Implementatins import db_additions_implementation, db_retrievals_impleme
 IT4All_router = APIRouter()
 
 
-#
-# @IT4All_router.get("/get_connections_in_network/{network_id}/")
-# async def get_connections_in_network(  # current_user: User = Depends(authorization.check_permission_of_technician)):
-#         network_id, ):
-#     try:
-#         connections = await database_retrievals.get_connections_in_specific_network(network_id)
-#         print(connections)
-#     except Exception as e:
-#
-#         print(e)
-#
-#     else:
-#         if connections:
-#             view_graph = database_retrievals.visualize_network_graph(connections)
-#             return FileResponse(view_graph)
-#     return "this network_id has no connections."
-#
-
 @IT4All_router.post("/send_client_id")
 async def get_client_id(client_id: str = Form(...)):
-    ci = int(client_id)
-    client.current_client_id = ClientId(client_id=ci)
-    return "ok.now you can do your actions to get or post to this client."
+    c_id = int(client_id)
+    if await database_retrievals.check_is_c_id_in_DB(c_id) != None:
+        client.current_client_id = ClientId(client_id=c_id)
+        return "ok.now you can do your actions to get or post to this client."
+    else:
+        return "there is no client with this id."
 
 
 @IT4All_router.post("/add_file/")
@@ -50,6 +35,10 @@ async def add_file(  # current_user: User = Depends(authorization.check_permissi
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Not all requested data was provided")
+    if client.current_client_id.client_id == None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="you need to send a client-id before you send this request.")
     network.current_network = Network(client_id=client.current_client_id.client_id, location=location_name,
                                       name=network_name)
     file_actions.check_the_file(file.filename)
