@@ -41,7 +41,3 @@
         <li>Submit a pull request</li>
     </ul>
 
-</body>
-
-</html>
-
