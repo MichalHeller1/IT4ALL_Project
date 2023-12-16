@@ -1,19 +1,19 @@
 # IT4ALL_Project
 
-    <p>Welcome to the Network Analysis project! This project is designed to address customer complaints related to network devices and connectivity issues. As a backend networking developer at "IT4ALL," your goal is to create a web application that visualizes and analyzes networks and devices deployed at customer locations.</p>
+    Welcome to the Network Analysis project! This project is designed to address customer complaints related to network devices and connectivity issues. As a backend networking developer at "IT4ALL," your goal is to create a web application that visualizes and analyzes networks and devices deployed at customer locations.
 
-    <h2>Project Stages</h2>
+    ## Project Stages
 
-    <h3>Stage 1 - Research</h3>
+    ### Stage 1 - Research
     <p>In this stage, you are required to research and understand fundamental network concepts. Key topics include network packets, the OSI model, interfaces, MAC addresses, IP addresses, routers, switches, .cap files, ARP, and basic knowledge of small networks.</p>
 
     <!-- Add more stages as necessary -->
 
-    <h2>Functionalities</h2>
+    Functionalities
 
-    <ul>
-        <li>Upload .pcap files to analyze network devices and connections.</li>
-        <li>Query connections in a network to map device relationships.</li>
+    
+        Upload .pcap files to analyze network devices and connections.
+        Query connections in a network to map device relationships.</li>
         <li>Query information about networks to retrieve a list of installed devices.</li>
         <li>User-based authentication system for technicians.</li>
         <!-- Include additional features here -->
