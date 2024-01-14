@@ -23,7 +23,7 @@ In order to realize this project we had to research and understand basic network
 
 Follow these steps to set up and run the project:
 
-1. Clone the repository: `git clone https://github.com/your-username/network-analysis-exercise.git`
+1. Clone the repository: `git clone https://github.com/MichalHeller1/IT4ALL_Project.git`
 2. Install dependencies: `npm install`
 3. Run the application: `npm start`
 
