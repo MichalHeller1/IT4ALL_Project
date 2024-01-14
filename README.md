@@ -1,13 +1,13 @@
 # IT4ALL_Project
 # Network Analysis
 
-Welcome to the Network Analysis Exercise project! This project aims to address customer complaints related to network devices and connectivity issues. As a backend networking developer at "IT4ALL," your goal is to create a web application that visualizes and analyzes networks and devices deployed at customer locations.
+Welcome to the Network Analysis Project! This project aims to address customer complaints related to network devices and connectivity issues. Our goal was to create a web application that visualizes and analyzes networks and devices deployed at customer locations.
 
 ## Project Stages
 
-### Stage 1 - Research
+### Research
 
-In this stage, you are required to research and understand fundamental network concepts. Key topics include network packets, the OSI model, interfaces, MAC addresses, IP addresses, routers, switches, .cap files, ARP, and basic knowledge of small networks.
+In order to realize this project we had to research and understand basic network concepts. Key topics include network packets, the OSI model, interfaces, MAC addresses, IP addresses, routers, switches, .cap files, ARP, and small network basics.
 
 <!-- Add more stages as necessary -->
 
